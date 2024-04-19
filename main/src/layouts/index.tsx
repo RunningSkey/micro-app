@@ -1,0 +1,28 @@
+import { PageContainer } from '@ant-design/pro-components';
+// import type { ProSettings } from "@ant-design/pro-components"
+import { Outlet } from '@umijs/max';
+
+export default () => {
+  // const settinngs: ProSettings | undefined = {
+  //   fixSiderbar: true,
+  //   layout: 'mix',
+  //   splitMenus: true
+  // }
+  // if(['/login','/home','/table','/access'].includes(location.pathname)){
+  //   console.log(location.pathname);
+    
+  //   return <Outlet />
+  // }
+  return (
+    <PageContainer
+      header={{
+        style: {
+          zIndex: 1,
+        },
+      }}
+      fixedHeader
+    >
+      {<Outlet />}
+    </PageContainer>
+  );
+};
