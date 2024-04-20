@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-components';
 // import type { ProSettings } from "@ant-design/pro-components"
 import { Outlet } from '@umijs/max';
 
-export default () => {
+export default ({ children }: { children: React.ReactNode }) => {
   // const settinngs: ProSettings | undefined = {
   //   fixSiderbar: true,
   //   layout: 'mix',
@@ -10,9 +10,10 @@ export default () => {
   // }
   // if(['/login','/home','/table','/access'].includes(location.pathname)){
   //   console.log(location.pathname);
-    
-  //   return <Outlet />
+
+  // return <Outlet />;
   // }
+
   return (
     <PageContainer
       header={{
@@ -23,6 +24,7 @@ export default () => {
       fixedHeader
     >
       {<Outlet />}
+      {children}
     </PageContainer>
   );
 };

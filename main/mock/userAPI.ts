@@ -1,8 +1,39 @@
-import routes from '../config/routes';
 const users = [
   { id: 0, name: 'Umi', nickName: 'U', gender: 'MALE' },
   { id: 1, name: 'Fish', nickName: 'B', gender: 'FEMALE' },
 ];
+
+const getResultRoutes = (name: string) => {
+  return [
+    {
+      name: 'app1_home',
+      path: '/app1/home',
+    },
+    {
+      name: 'app1_access',
+      path: '/app1/access',
+    },
+    {
+      name: 'app1_table',
+      path: '/app1/table',
+    },
+    {
+      name: '多层级',
+      path: '/app1/demo',
+      children: [
+        {
+          name: ' CRUD 示例',
+          path: '/app1/demo/table',
+        },
+      ],
+    },
+  ].filter((item) => {
+    if (name === 'admin') {
+      return item;
+    }
+    return !(item.path === '/app1/access');
+  });
+};
 
 export default {
   'GET /api/v1/queryUserList': (req: any, res: any) => {
@@ -25,11 +56,25 @@ export default {
       (name === 'user' && password === 'ant.design');
     res.json({
       success: isSuccess,
-      errorMessage: '登录失败',
+      errorMessage: isSuccess ? '' : '登录失败',
       data: {
         name,
         token: '12345',
-        routes,
+        routes: getResultRoutes(name),
+      },
+      errorCode: 0,
+    });
+  },
+  'GET /api/v1/userInfo': (req: any, res: any) => {
+    const { token, name } = req.query;
+    const isSuccess = token === '12345';
+    res.json({
+      success: isSuccess,
+      errorMessage: isSuccess ? '' : '获取用户信息失败',
+      data: {
+        name,
+        token,
+        routes: getResultRoutes(name),
       },
       errorCode: 0,
     });

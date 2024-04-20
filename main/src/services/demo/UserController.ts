@@ -110,3 +110,19 @@ export async function login(
     ...(options || {}),
   });
 }
+
+export async function getUserInfo(
+  params: {
+    // path
+    /** userId */
+    name: string;
+    token: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.Result_string_>(`/api/v1/userInfo`, {
+    method: 'GET',
+    params: params,
+    ...(options || {}),
+  });
+}

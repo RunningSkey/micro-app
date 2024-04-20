@@ -10,7 +10,7 @@ export default defineConfig({
     title: '@umijs/max',
   },
   qiankun: {
-    slave: {}
+    slave: {},
   },
   routes: [
     {
@@ -32,7 +32,22 @@ export default defineConfig({
       path: '/table',
       component: './Table',
     },
+    {
+      name: '多层级',
+      path: '/demo',
+      routes: [
+        {
+          name: '权限演示',
+          path: '/demo/access',
+          component: './Access',
+        },
+        {
+          name: ' CRUD 示例',
+          path: '/demo/table',
+          component: './Table',
+        },
+      ],
+    },
   ],
   npmClient: 'pnpm',
 });
-

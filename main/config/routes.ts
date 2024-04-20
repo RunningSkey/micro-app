@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/',
@@ -7,7 +6,7 @@ const routes = [
   {
     path: '/login',
     component: './Login',
-    layout: false
+    layout: false,
   },
   {
     name: '首页',
@@ -15,28 +14,16 @@ const routes = [
     component: './Home',
   },
   {
-    name: '权限演示',
-    path: '/access',
-    component: './Access',
-  },
-  {
-    name: ' CRUD 示例',
+    name: '主应用页面',
     path: '/table',
     component: './Table',
   },
   {
-    name: 'app1',
-    path: '/app1',
-    routes: [
-      {
-        path: '/app1/*',
-        microApp: 'app1',
-        microAppProps: {
-          autoSetLoading: true
-        }
-      }
-    ]
-  }
+    name: '404',
+    path: '*',
+    component: './404',
+    hideInMenu: true,
+  },
 ];
 
 export default routes;

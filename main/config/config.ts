@@ -1,6 +1,4 @@
-
 import { defineConfig } from '@umijs/max';
-import qiankun from './qiankun';
 import routes from './routes';
 export default defineConfig({
   antd: {},
@@ -9,10 +7,12 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: 'micro-app'
+    title: 'micro-app',
   },
   base: '/',
-  qiankun,
+  qiankun: {
+    master: {},
+  },
   routes,
-  npmClient: 'pnpm'
-})
+  npmClient: 'pnpm',
+});

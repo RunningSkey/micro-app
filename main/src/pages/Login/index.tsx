@@ -1,4 +1,5 @@
 import services from '@/services/demo';
+import { getURLParameters } from '@/utils';
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -62,7 +63,9 @@ export default () => {
               });
             }
             setInitialState(data.data);
-            history.push('/');
+            localStorage.setItem('initialState', JSON.stringify(data.data));
+            const { redirect } = getURLParameters();
+            history.push(redirect || '/');
           }}
         >
           <Tabs
