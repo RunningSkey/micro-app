@@ -19,10 +19,36 @@ const routes = [
     component: './Table',
   },
   {
-    name: '404',
-    path: '*',
-    component: './404',
-    hideInMenu: true,
+    name: 'vue-admin-template',
+    path: '/vue-admin-template',
+    routes: [
+      {
+        name: 'Form',
+        path: '/vue-admin-template/form/index',
+        microApp: 'vue-admin-template',
+      },
+      {
+        name: 'Example',
+        path: '/vue-admin-template/example',
+        microApp: 'vue-admin-template',
+        routes: [
+          {
+            name: 'table',
+            path: '/vue-admin-template/example/table',
+            microApp: 'vue-admin-template',
+          },
+          {
+            name: 'tree',
+            path: '/vue-admin-template/example/tree',
+            microApp: 'vue-admin-template',
+          },
+        ],
+      },
+      {
+        path: '/vue-admin-template/*',
+        microApp: 'vue-admin-template',
+      },
+    ],
   },
 ];
 

@@ -4,6 +4,7 @@ const users = [
 ];
 
 const getResultRoutes = (name: string) => {
+  return [];
   return [
     {
       name: 'app1_home',

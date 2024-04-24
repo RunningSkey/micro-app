@@ -29,10 +29,10 @@ export async function getInitialState(): Promise<{ name: string }> {
 export const qiankun = {
   master: {
     apps: [
-      // {
-      //   name: 'app1',
-      //   entry: '//localhost:8001',
-      // },
+      {
+        entry: '//localhost:8002',
+        name: 'vue-admin-template',
+      },
     ],
   },
 };
@@ -112,6 +112,11 @@ export function patchClientRoutes({ routes }) {
   routes.forEach((item) => {
     if (item.path === '/') {
       item.routes.push(...extraRoutes);
+      // item.routes.push({
+      //   name: 'app3',
+      //   path: '/question',
+      //   microApp: 'app3',
+      // });
     }
   });
   console.log(routes, '222');
@@ -128,6 +133,10 @@ const getMicroApp = (appName: string) => {
     appName: appName,
     appEntry: '//localhost:8001',
     appRoutes: [
+      // {
+      //   name: appName + 'question',
+      //   path: '/' + 'theone' + '/question',
+      // },
       {
         name: appName + '_home',
         path: '/' + appName + '/home',
