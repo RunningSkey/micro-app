@@ -30,7 +30,7 @@ export const qiankun = {
   master: {
     apps: [
       {
-        entry: '//localhost:8002',
+        entry: '//localhost:9528',
         name: 'vue-admin-template',
       },
     ],
@@ -168,7 +168,7 @@ export async function render(oldRender) {
 
   const data = await new Promise((reslove) => {
     setTimeout(() => {
-      reslove([getMicroApp('app1'), getMicroApp('app2')]);
+      reslove([getMicroApp('react1'), getMicroApp('react2')]);
     }, 1000);
   });
   const routes = [];

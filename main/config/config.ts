@@ -18,7 +18,7 @@ export default defineConfig({
   },
   proxy: {
     '/dev-api': {
-      target: 'http://localhost:8002',
+      target: 'http://localhost:9528',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
