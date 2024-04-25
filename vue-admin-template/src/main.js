@@ -60,6 +60,7 @@ export async function bootstrap() {
 // 导出每次创建挂载时的钩子函数
 export async function mount(props) {
   console.log(props, "子應用-------------");
+  props.setLoading(false);
   render(props); // 核心在这里，每次挂载的时候，执行我们所封装的render函数
 }
 

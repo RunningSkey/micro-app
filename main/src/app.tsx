@@ -5,6 +5,7 @@ import { MicroApp, RuntimeConfig, history, useModel } from '@umijs/max';
 import { Button } from 'antd';
 import { useState } from 'react';
 import Layouts from './layouts';
+import { getMicroReactApp, getMicroVueApp } from './serviceMicro';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -29,10 +30,10 @@ export async function getInitialState(): Promise<{ name: string }> {
 export const qiankun = {
   master: {
     apps: [
-      {
-        entry: '//localhost:9528',
-        name: 'vue-admin-template',
-      },
+      // {
+      //   entry: '//localhost:9528',
+      //   name: 'vue-admin-template',
+      // },
     ],
   },
 };
@@ -128,47 +129,16 @@ export function onRouteChange({ location }) {
     localStorage.removeItem('initialState');
   }
 }
-const getMicroApp = (appName: string) => {
-  return {
-    appName: appName,
-    appEntry: '//localhost:8001',
-    appRoutes: [
-      // {
-      //   name: appName + 'question',
-      //   path: '/' + 'theone' + '/question',
-      // },
-      {
-        name: appName + '_home',
-        path: '/' + appName + '/home',
-      },
-      {
-        name: appName + '_access',
-        path: '/' + appName + '/access',
-      },
-      {
-        name: appName + '_table',
-        path: '/' + appName + '/table',
-      },
-      {
-        name: '多层级',
-        path: '/' + appName + '/demo',
-        redirect: '/' + appName + '/demo/table',
-        children: [
-          {
-            name: ' CRUD 示例',
-            path: '/' + appName + '/demo/table',
-          },
-        ],
-      },
-    ],
-  };
-};
+
 export async function render(oldRender) {
   console.log('render-----');
-
   const data = await new Promise((reslove) => {
     setTimeout(() => {
-      reslove([getMicroApp('react1'), getMicroApp('react2')]);
+      reslove([
+        getMicroReactApp('react1'),
+        getMicroReactApp('react2'),
+        getMicroVueApp('vue-admin-template'),
+      ]);
     }, 1000);
   });
   const routes = [];

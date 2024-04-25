@@ -1,8 +1,5 @@
-import { IConfigFromPlugins } from '@@/core/pluginConfig';
 import { defineConfig } from '@umijs/max';
 import routes from './routes';
-// import type { IConfig } from '@umijs/preset-umi';
-type A = IConfigFromPlugins;
 export default defineConfig({
   antd: {},
   access: {},
