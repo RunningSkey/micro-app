@@ -137,7 +137,8 @@ export async function render(oldRender) {
       reslove([
         getMicroReactApp('react1'),
         getMicroReactApp('react2'),
-        getMicroVueApp('vue-admin-template'),
+        getMicroVueApp('vue1'),
+        getMicroVueApp('vue2'),
       ]);
     }, 1000);
   });

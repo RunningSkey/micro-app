@@ -1,6 +1,5 @@
 import Vue from "vue";
 import "./public-path";
-
 import "normalize.css/normalize.css"; // A modern alternative to CSS resets
 
 import ElementUI from "element-ui";
@@ -39,7 +38,7 @@ Vue.config.productionTip = false;
 let instance = null;
 
 export const render = (props) => {
-  console.log(props, "pppr");
+  console.log(props, "pppr", router);
   instance = new Vue({
     el: "#app",
     router,
@@ -53,13 +52,13 @@ if (!window.__POWERED_BY_QIANKUN__) {
 }
 // 生命周期的钩子函数
 // 导出第一次进入当前子应用的钩子函数
-export async function bootstrap() {
-  console.log(11341421, "子應用");
+export async function bootstrap(props) {
+  console.log(props, "bootstrap-------------");
 }
 
 // 导出每次创建挂载时的钩子函数
 export async function mount(props) {
-  console.log(props, "子應用-------------");
+  console.log(props, "mount-------------");
   props.setLoading(false);
   render(props); // 核心在这里，每次挂载的时候，执行我们所封装的render函数
 }

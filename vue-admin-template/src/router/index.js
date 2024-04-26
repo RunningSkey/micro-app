@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
-
+const BASE_URL = window.__POWERED_BY_QIANKUN__
+  ? window.location.pathname.split("/")[1]
+  : "/";
 Vue.use(Router);
 
 /* Layout */
@@ -168,7 +170,7 @@ export const constantRoutes = [
 
   // 404 page must be placed at the end !!!
   {
-    path: window.__POWERED_BY_QIANKUN__ ? "/vue-admin-template/*" : "*",
+    path: BASE_URL + "*",
     redirect: "/404",
     hidden: true,
   },
@@ -178,7 +180,7 @@ const createRouter = () =>
     mode: "history", // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes,
-    base: window.__POWERED_BY_QIANKUN__ ? "/vue-admin-template" : "/",
+    base: BASE_URL,
   });
 
 const router = createRouter();
