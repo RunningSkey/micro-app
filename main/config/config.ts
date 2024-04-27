@@ -1,7 +1,26 @@
 import { defineConfig } from '@umijs/max';
 import routes from './routes';
 export default defineConfig({
-  antd: {},
+  antd: {
+    configProvider: {
+      prefixCls: 'yourPrefix',
+    },
+    // lessLoader: {
+    //   loader: 'less-loader',
+    //   options: {
+    //     modifyVars: {
+    //       '@ant-prefix': 'yourPrefix',
+    //     },
+    //     javascriptEnabled: true,
+    //   },
+    // },
+  },
+  // lessLoader: {
+  //   modifyVars: {
+  //     '@ant-prefix': 'yourPrefix',
+  //   },
+  //   javascriptEnabled: true,
+  // },
   access: {},
   model: {},
   initialState: {},

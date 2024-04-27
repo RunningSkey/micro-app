@@ -55,6 +55,7 @@ const routes = [
     path: '*',
     component: './404',
     hideInMenu: true,
+    layout: false,
   },
 ];
 

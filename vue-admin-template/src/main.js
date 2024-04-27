@@ -38,7 +38,7 @@ Vue.config.productionTip = false;
 let instance = null;
 
 export const render = (props) => {
-  console.log(props, "pppr", router);
+  console.log(props?.container, "pppr");
   instance = new Vue({
     el: "#app",
     router,

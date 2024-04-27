@@ -83,7 +83,14 @@ export const layout: RuntimeConfig['layout'] = (initData) => {
     rightContentRender(_, dom) {
       return (
         <>
-          <Button>333</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            reload
+          </Button>
           {dom}
         </>
       );
@@ -91,7 +98,16 @@ export const layout: RuntimeConfig['layout'] = (initData) => {
     logout() {
       history.push('/login');
     },
-    links: [<a key={1}>hahah</a>],
+    links: [
+      <a
+        rel="noreferrer"
+        target="_blank"
+        key={1}
+        href="https://github.com/RunningSkey/micro-app"
+      >
+        external-link
+      </a>,
+    ],
   };
 };
 
@@ -105,6 +121,7 @@ export function useQiankunStateForSlave() {
     globalState,
     setGlobalState,
     mainInitialState: mainInitialState,
+    masterHistory: history,
   };
 }
 let extraRoutes = [];
@@ -124,10 +141,10 @@ export function patchClientRoutes({ routes }) {
 }
 
 export function onRouteChange({ location }) {
-  console.log(location);
-  if (location.pathname === '/login') {
-    localStorage.removeItem('initialState');
-  }
+  // console.log(location);
+  // if (location.pathname === '/login') {
+  //   localStorage.removeItem('initialState');
+  // }
 }
 
 export async function render(oldRender) {

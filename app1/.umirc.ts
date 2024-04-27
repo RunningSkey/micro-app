@@ -1,7 +1,11 @@
 import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
-  antd: {},
+  antd: {
+    configProvider: {
+      prefixCls: 'app1',
+    },
+  },
   access: {},
   model: {},
   initialState: {},
