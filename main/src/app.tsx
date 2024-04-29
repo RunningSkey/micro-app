@@ -171,6 +171,9 @@ export async function render(oldRender) {
         microApp: item.appName,
         element: (
           <Layouts>
+            <Button onClick={() => window.open(item.appEntry)}>
+              子应用： {item.appEntry}
+            </Button>
             <MicroApp
               key={item.appName + '/' + item.appName}
               name={item.appName}
@@ -182,7 +185,6 @@ export async function render(oldRender) {
       });
     });
   });
-  console.log(qiankun, 'qiankun');
   extraRoutes = routes;
   oldRender();
 }

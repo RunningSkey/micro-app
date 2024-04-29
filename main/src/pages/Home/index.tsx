@@ -23,18 +23,14 @@ const HomePage: React.FC = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: 'MicroAppWithMemoHistory-/react1/table',
+      label: 'MicroAppWithMemoHistory-react1',
       children: (
-        <div
-          style={{
-            zIndex: 11,
-          }}
-        >
+        <div>
           使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化
           <MicroAppWithMemoHistory
             key={'MicroAppWithMemoHistory-react1---'}
             base={'/react1'}
-            url={'/react1/table'}
+            url={'/react1/access'}
             name="react1"
             autoSetLoading
             masterHistory={H}
@@ -44,8 +40,18 @@ const HomePage: React.FC = () => {
     },
     {
       key: '2',
-      label: 'Tab 2',
-      children: 'Content of Tab Pane 2',
+      label: 'MicroAppWithMemoHistory-vue2.0',
+      children: (
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://github.com/umijs/qiankun/issues/1942"
+          >
+            使用MicroAppWithMemoHistory加载vue2子应用无效
+          </a>
+        </div>
+      ),
     },
     {
       key: '3',
@@ -81,6 +87,7 @@ const HomePage: React.FC = () => {
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
+          width={800}
         >
           <div>Modal content</div>
           <Button
@@ -91,31 +98,25 @@ const HomePage: React.FC = () => {
           >
             show MicroAppWithMemoHistory{' '}
           </Button>
-          {/* <MicroAppWithMemoHistory
-            key={'vue1---'}
-            base={'/vue1'}
-            url={'/vue1/dashboard'}
-            name="vue1"
-            autoSetLoading
-            masterHistory={H}
-          /> */}
-          {o && (
-            <MicroAppWithMemoHistory
-              key={'MicroAppWithMemoHistory-react12---Modal'}
-              base={'/react1'}
-              url={'/react1/access'}
-              name="react1"
-              autoSetLoading
-              masterHistory={H}
-            />
-          )}
+          <div>
+            {o && (
+              <MicroAppWithMemoHistory
+                key={'MicroAppWithMemoHistory-react12---Modal'}
+                base={'/react1'}
+                url={'/react1/home'}
+                name="react1"
+                autoSetLoading
+                masterHistory={H}
+              />
+            )}
+          </div>
         </Modal>
         <Button onClick={showDrawer}>showDrawer</Button>
-        <Drawer title="Basic Drawer" onClose={onClose} open={open}>
+        <Drawer width={800} title="Basic Drawer" onClose={onClose} open={open}>
           <MicroAppWithMemoHistory
             key={'MicroAppWithMemoHistory-react13---Modal'}
             base={'/react1'}
-            url={'/react1/access'}
+            url={'/react1/table'}
             name="react1"
             autoSetLoading
             masterHistory={H}

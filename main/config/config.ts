@@ -3,24 +3,9 @@ import routes from './routes';
 export default defineConfig({
   antd: {
     configProvider: {
-      prefixCls: 'yourPrefix',
+      prefixCls: 'main',
     },
-    // lessLoader: {
-    //   loader: 'less-loader',
-    //   options: {
-    //     modifyVars: {
-    //       '@ant-prefix': 'yourPrefix',
-    //     },
-    //     javascriptEnabled: true,
-    //   },
-    // },
   },
-  // lessLoader: {
-  //   modifyVars: {
-  //     '@ant-prefix': 'yourPrefix',
-  //   },
-  //   javascriptEnabled: true,
-  // },
   access: {},
   model: {},
   initialState: {},
@@ -38,11 +23,6 @@ export default defineConfig({
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
-    // '/#/dashboard': {
-    //   target: 'http://localhost:8002',
-    //   changeOrigin: true,
-    //   // pathRewrite: { '^/api': '' },
-    // },
   },
   routes,
   npmClient: 'pnpm',
