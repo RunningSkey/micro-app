@@ -10,6 +10,7 @@
       <div v-if="!isQianKun" :class="{ 'fixed-header': fixedHeader }">
         <navbar />
       </div>
+      <div v-if="isQianKun">来着基座的信息 {{ masterProps }}</div>
       <app-main />
     </div>
   </div>
@@ -29,6 +30,7 @@ export default {
   data() {
     return {
       isQianKun: window.__POWERED_BY_QIANKUN__,
+      masterProps: this.$masterProps?.mainInitialState?.initialState,
     };
   },
   mixins: [ResizeMixin],

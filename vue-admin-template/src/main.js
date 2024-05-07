@@ -38,13 +38,13 @@ Vue.config.productionTip = false;
 let instance = null;
 
 export const render = (props) => {
-  console.log(props?.container, "pppr");
   instance = new Vue({
     el: "#app",
     router,
     store,
     render: (h) => h(App),
   });
+  Vue.prototype.$masterProps = props;
 };
 
 if (!window.__POWERED_BY_QIANKUN__) {
