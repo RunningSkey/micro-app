@@ -2,11 +2,13 @@
   "private": true,
   "author": "theone <469235606@qq.com>",
   "scripts": {
-    "dev": "max dev",
-    "build": "max build",
+    "build": "cross-env APP_ENV=dev max build",
+    "build:prod": "cross-env APP_ENV=prod max build",
+    "dev": "cross-env APP_ENV=dev max dev",
+    "dev:prod": "cross-env APP_ENV=prod max dev",
     "format": "prettier --cache --write .",
-    "prepare": "husky",
     "postinstall": "max setup",
+    "prepare": "husky",
     "setup": "max setup",
     "start": "npm run dev"
   },
@@ -19,6 +21,7 @@
   "devDependencies": {
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
+    "cross-env": "^7.0.3",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",

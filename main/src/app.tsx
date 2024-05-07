@@ -1,6 +1,5 @@
 // 运行时配置
 
-import services from '@/services/demo';
 import { MicroApp, RuntimeConfig, history, useModel } from '@umijs/max';
 import { Button } from 'antd';
 import { useState } from 'react';
@@ -11,20 +10,24 @@ import { getMicroReactApp, getMicroVueApp } from './serviceMicro';
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<{ name: string }> {
   console.log('getInitialState');
-  const { getUserInfo } = services.UserController;
-  const userInfo = JSON.parse(localStorage.getItem('initialState') || '{}');
-  const data = await getUserInfo({
-    name: userInfo.name,
-    token: userInfo.token,
-  }).catch(() => {
-    if (location.pathname !== '/login')
-      history.push('/login?redirect=' + encodeURIComponent(location.href));
-  });
-  if (!data.success) {
-    if (location.pathname !== '/login')
-      history.push('/login?redirect=' + encodeURIComponent(location.href));
-  }
-  return { ...data.data };
+  // const { getUserInfo } = services.UserController;
+  const userInfo = JSON.parse(
+    localStorage.getItem('initialState') ||
+      '{"name":"user","token":"12345","routes":[]}',
+  );
+  // const data = await getUserInfo({
+  //   name: userInfo.name,
+  //   token: userInfo.token,
+  // }).catch(() => {
+  //   if (location.pathname !== '/login')
+  //     history.push('/login?redirect=' + encodeURIComponent(location.href));
+  // });
+  // if (!data.success) {
+  //   if (location.pathname !== '/login')
+  //     history.push('/login?redirect=' + encodeURIComponent(location.href));
+  // }
+  localStorage.setItem('initialState', JSON.stringify(userInfo));
+  return { ...userInfo };
 }
 /** 动态qiankun配置 */
 export const qiankun = {
@@ -34,6 +37,10 @@ export const qiankun = {
       //   entry: '//localhost:9528',
       //   name: 'vue-admin-template',
       // },
+      {
+        entry: '//localhost:5173',
+        name: 'vite-project',
+      },
     ],
   },
 };
@@ -116,6 +123,7 @@ export function useQiankunStateForSlave() {
   const [globalState, setGlobalState] = useState<any>({
     slogan: 'Hello MicroFrontend',
   });
+  console.log(mainInitialState, 'mainInitialState');
 
   return {
     globalState,

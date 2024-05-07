@@ -1,7 +1,7 @@
 import Guide from '@/components/Guide';
 import { trim } from '@/utils/format';
 import { history as H, MicroAppWithMemoHistory, useModel } from '@umijs/max';
-import { Button, Drawer, Modal, Tabs, TabsProps } from 'antd';
+import { Button, Col, Drawer, Modal, Row, Tabs, TabsProps } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
 
@@ -26,15 +26,29 @@ const HomePage: React.FC = () => {
       label: 'MicroAppWithMemoHistory-react1',
       children: (
         <div>
-          使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化
-          <MicroAppWithMemoHistory
-            key={'MicroAppWithMemoHistory-react1---'}
-            base={'/react1'}
-            url={'/react1/access'}
-            name="react1"
-            autoSetLoading
-            masterHistory={H}
-          />
+          使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化,同时存在2个组件
+          <Row>
+            <Col span={12}>
+              <MicroAppWithMemoHistory
+                key={'MicroAppWithMemoHistory-react1--1-'}
+                base={'/react1'}
+                url={'/react1/access'}
+                name="react1"
+                autoSetLoading
+                masterHistory={H}
+              />
+            </Col>
+            <Col span={12}>
+              <MicroAppWithMemoHistory
+                key={'MicroAppWithMemoHistory-react1--2-'}
+                base={'/react1'}
+                url={'/react1/access'}
+                name="react1"
+                autoSetLoading
+                masterHistory={H}
+              />
+            </Col>
+          </Row>
         </div>
       ),
     },
@@ -55,8 +69,21 @@ const HomePage: React.FC = () => {
     },
     {
       key: '3',
-      label: 'Tab 3',
-      children: 'Content of Tab Pane 3',
+      label: 'MicroAppWithMemoHistory-vite-project',
+      children: (
+        <div>
+          使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化
+          <MicroAppWithMemoHistory
+            key={'MicroAppWithMemoHistory--vite-project---1'}
+            // base={'/react1'}
+            url={'/vite-project/access'}
+            name="vite-project"
+            autoSetLoading
+            masterHistory={H}
+            memoryHistory
+          />
+        </div>
+      ),
     },
   ];
   const [o, sO] = useState(false);

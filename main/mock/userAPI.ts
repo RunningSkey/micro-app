@@ -3,39 +3,6 @@ const users = [
   { id: 1, name: 'Fish', nickName: 'B', gender: 'FEMALE' },
 ];
 
-const getResultRoutes = (name: string) => {
-  return [];
-  return [
-    {
-      name: 'app1_home',
-      path: '/app1/home',
-    },
-    {
-      name: 'app1_access',
-      path: '/app1/access',
-    },
-    {
-      name: 'app1_table',
-      path: '/app1/table',
-    },
-    {
-      name: '多层级',
-      path: '/app1/demo',
-      children: [
-        {
-          name: ' CRUD 示例',
-          path: '/app1/demo/table',
-        },
-      ],
-    },
-  ].filter((item) => {
-    if (name === 'admin') {
-      return item;
-    }
-    return !(item.path === '/app1/access');
-  });
-};
-
 export default {
   'GET /api/v1/queryUserList': (req: any, res: any) => {
     res.json({
@@ -61,7 +28,7 @@ export default {
       data: {
         name,
         token: '12345',
-        routes: getResultRoutes(name),
+        routes: [],
       },
       errorCode: 0,
     });
@@ -75,7 +42,7 @@ export default {
       data: {
         name,
         token,
-        routes: getResultRoutes(name),
+        routes: [],
       },
       errorCode: 0,
     });
