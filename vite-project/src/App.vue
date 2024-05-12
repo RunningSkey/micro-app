@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
+console.log(import.meta.env, '')
 const logo = new URL('@/assets/logo.svg', import.meta.url)
 const masterProps = getCurrentInstance().appContext.config.globalProperties.$masterProps || {}
 </script>

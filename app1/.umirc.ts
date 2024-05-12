@@ -1,8 +1,16 @@
 import { defineConfig } from '@umijs/max';
-console.log(process.env.APP_ENV, 'process.env.BASE_URL');
+import path from 'path';
+console.log(process.env.APP_ENV, 'process.env.APP_ENV');
 
 export default defineConfig({
-  publicPath: process.env.APP_ENV === 'dev' ? '/' : '../dist/',
+  define: {
+    'process.env': process.env,
+  },
+  publicPath: process.env.APP_ENV === 'dev' ? '/' : './',
+  outputPath:
+    process.env.APP_ENV === 'dev'
+      ? '/'
+      : path.resolve(__dirname, '../build/app1'),
   antd: {
     configProvider: {
       prefixCls: 'app1',

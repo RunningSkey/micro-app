@@ -22,3 +22,13 @@ export function getURLParameters() {
 
   return parameters;
 }
+
+export const jsonParse = <T>(json: string | null, defaultRes: T) => {
+  let res: T;
+  try {
+    res = JSON.parse(json as string) as T;
+  } catch (error) {
+    res = defaultRes;
+  }
+  return res || defaultRes;
+};

@@ -1,27 +1,29 @@
-import services from '@/services/demo';
+import { APP_TYPE, MICRO_APPS } from '@/constants';
+import { jsonParse } from '@/utils';
 import {
   ActionType,
-  FooterToolbar,
-  ProDescriptions,
   ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Divider, Drawer, message } from 'antd';
+import { Button, Divider, Tag, message } from 'antd';
 import React, { useRef, useState } from 'react';
+import ConfigRoutesForm from './components/ConfigRoutesForm';
 import CreateForm from './components/CreateForm';
-import UpdateForm, { FormValueType } from './components/UpdateForm';
+import { TABLE_API } from './typings';
 
-const { addUser, queryUserList, deleteUser, modifyUser } =
-  services.UserController;
-
+const disableDeleteApps = ['react1', 'vite-project'];
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.UserInfo) => {
+const handleAdd = async (fields: TABLE_API.SubApp) => {
   const hide = message.loading('正在添加');
   try {
-    await addUser({ ...fields });
+    const res = jsonParse<TABLE_API.SubApp[]>(
+      localStorage.getItem(MICRO_APPS),
+      [],
+    );
+    localStorage.setItem(MICRO_APPS, JSON.stringify([...res, fields]));
     hide();
     message.success('添加成功');
     return true;
@@ -36,21 +38,21 @@ const handleAdd = async (fields: API.UserInfo) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) => {
+const handleUpdate = async (fields: TABLE_API.SubApp) => {
   const hide = message.loading('正在配置');
+  console.log(fields);
   try {
-    await modifyUser(
-      {
-        userId: fields.id || '',
-      },
-      {
-        name: fields.name || '',
-        nickName: fields.nickName || '',
-        email: fields.email || '',
-      },
+    const res = jsonParse<TABLE_API.SubApp[]>(
+      localStorage.getItem(MICRO_APPS),
+      [],
+    );
+    localStorage.setItem(
+      MICRO_APPS,
+      JSON.stringify(
+        res.map((item) => (item.appName === fields.appName ? fields : item)),
+      ),
     );
     hide();
-
     message.success('配置成功');
     return true;
   } catch (error) {
@@ -64,15 +66,24 @@ const handleUpdate = async (fields: FormValueType) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.UserInfo[]) => {
+const handleRemove = async (selectedRows: TABLE_API.SubApp[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await deleteUser({
-      userId: selectedRows.find((row) => row.id)?.id || '',
-    });
+    const res = jsonParse<TABLE_API.SubApp[]>(
+      localStorage.getItem(MICRO_APPS),
+      [],
+    );
+    localStorage.setItem(
+      MICRO_APPS,
+      JSON.stringify(
+        res.filter(
+          (item) => !selectedRows.find((i) => i.appName === item.appName),
+        ),
+      ),
+    );
     hide();
-    message.success('删除成功，即将刷新');
+    message.success('删除成功');
     return true;
   } catch (error) {
     hide();
@@ -83,70 +94,112 @@ const handleRemove = async (selectedRows: API.UserInfo[]) => {
 
 const TableList: React.FC<unknown> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  const [updateModalVisible, handleUpdateModalVisible] =
+  const [configRoutesModalVisible, handleConfigRoutesModalVisible] =
     useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [currentRow, setCurrentRow] = useState<TABLE_API.SubApp>();
   const actionRef = useRef<ActionType>();
-  const [row, setRow] = useState<API.UserInfo>();
-  const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
-  const columns: ProDescriptionsItemProps<API.UserInfo>[] = [
+  const columns: ProDescriptionsItemProps<TABLE_API.SubApp>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
-      tip: '名称是唯一的 key',
+      title: '应用类型',
+      dataIndex: 'appType',
+      valueEnum: APP_TYPE,
+      tooltip: '静态应用是在代码中写死的，无法动态修改',
       formItemProps: {
         rules: [
           {
             required: true,
-            message: '名称为必填项',
+            message: '应用类型',
+          },
+        ],
+      },
+      render(text, record) {
+        return <Tag color={APP_TYPE[record['appType']]?.color}>{text}</Tag>;
+      },
+    },
+    {
+      title: '子应用名称',
+      dataIndex: 'appName',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '子应用名称',
           },
         ],
       },
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '子应用地址',
+      dataIndex: 'appEntry',
       valueType: 'text',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '子应用名称',
+          },
+        ],
+      },
+      render(text) {
+        return <a onClick={() => window.open(text as string)}>{text}</a>;
+      },
     },
+
     {
-      title: '性别',
-      dataIndex: 'gender',
+      title: '是否被MicroAppWithMemoHistory引用',
+      dataIndex: '_appName_',
       hideInForm: true,
-      valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
+      render(_, record) {
+        return disableDeleteApps.find((i) => i === record.appName)
+          ? '是'
+          : '否';
       },
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => (
-        <>
-          <a
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
-          >
-            配置
-          </a>
-          <Divider type="vertical" />
-          <a href="">订阅警报</a>
-        </>
-      ),
+      render: (_, record) => {
+        if (record.appType !== APP_TYPE.DYNAMIC.value) return null;
+        return (
+          <>
+            <a
+              onClick={() => {
+                handleConfigRoutesModalVisible(true);
+                setCurrentRow(record);
+              }}
+            >
+              配置
+            </a>
+            <Divider type="vertical" />
+            <Button
+              hidden={!!disableDeleteApps.find((i) => i === record.appName)}
+              onClick={async () => {
+                const success = await handleRemove([record]);
+                if (success && actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }}
+              type="link"
+              danger
+            >
+              删除
+            </Button>
+          </>
+        );
+      },
     },
   ];
-
   return (
     <>
-      <ProTable<API.UserInfo>
-        headerTitle="查询表格"
+      <ProTable<TABLE_API.SubApp>
+        search={false}
+        headerTitle="子应用列表"
         actionRef={actionRef}
-        rowKey="id"
-        search={{
-          labelWidth: 120,
-        }}
+        rowKey="appName"
+        // search={{
+        //   labelWidth: 120,
+        // }}
         toolBarRender={() => [
           <Button
             key="1"
@@ -156,52 +209,28 @@ const TableList: React.FC<unknown> = () => {
             新建
           </Button>,
         ]}
-        request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
-            ...params,
-            // FIXME: remove @ts-ignore
-            // @ts-ignore
-            sorter,
-            filter,
+        request={async () => {
+          const data: TABLE_API.SubApp[] = await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(
+                jsonParse(localStorage.getItem(MICRO_APPS) as string, []),
+              );
+            }, 500);
           });
           return {
-            data: data?.list || [],
-            success,
+            success: true,
+            data,
           };
         }}
+        //@ts-ignore
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => setSelectedRows(selectedRows),
-        }}
       />
 
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              项&nbsp;&nbsp;
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            批量删除
-          </Button>
-          <Button type="primary">批量审批</Button>
-        </FooterToolbar>
-      )}
       <CreateForm
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
       >
-        <ProTable<API.UserInfo, API.UserInfo>
+        <ProTable<TABLE_API.SubApp, TABLE_API.SubApp>
           onSubmit={async (value) => {
             const success = await handleAdd(value);
             if (success) {
@@ -211,54 +240,30 @@ const TableList: React.FC<unknown> = () => {
               }
             }
           }}
-          rowKey="id"
+          rowKey="appName"
           type="form"
+          //@ts-ignore
           columns={columns}
         />
       </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async (value) => {
-            const success = await handleUpdate(value);
-            if (success) {
-              handleUpdateModalVisible(false);
-              setStepFormValues({});
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
+      <ConfigRoutesForm
+        onSubmit={async (value) => {
+          const success = await handleUpdate(value);
+          if (success) {
+            handleConfigRoutesModalVisible(false);
+            setCurrentRow(undefined);
+            if (actionRef.current) {
+              actionRef.current.reload();
             }
-          }}
-          onCancel={() => {
-            handleUpdateModalVisible(false);
-            setStepFormValues({});
-          }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
-      ) : null}
-
-      <Drawer
-        width={600}
-        open={!!row}
-        onClose={() => {
-          setRow(undefined);
+          }
         }}
-        closable={false}
-      >
-        {row?.name && (
-          <ProDescriptions<API.UserInfo>
-            column={2}
-            title={row?.name}
-            request={async () => ({
-              data: row || {},
-            })}
-            params={{
-              id: row?.name,
-            }}
-            columns={columns}
-          />
-        )}
-      </Drawer>
+        onCancel={() => {
+          handleConfigRoutesModalVisible(false);
+          setCurrentRow(undefined);
+        }}
+        open={configRoutesModalVisible}
+        values={currentRow}
+      />
     </>
   );
 };

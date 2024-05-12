@@ -1,10 +1,12 @@
 // 运行时配置
 
 import { MicroApp, RuntimeConfig, history, useModel } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import { useState } from 'react';
+import { APP_TYPE, MICRO_APPS } from './constants';
 import Layouts from './layouts';
 import { getMicroReactApp, getMicroVueApp } from './serviceMicro';
+import { jsonParse } from './utils';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -29,23 +31,20 @@ export async function getInitialState(): Promise<{ name: string }> {
   localStorage.setItem('initialState', JSON.stringify(userInfo));
   return { ...userInfo };
 }
+
+const staticApps = [
+  {
+    entry: '//localhost:5173',
+    name: 'vite-project',
+  },
+];
 /** 动态qiankun配置 */
 export const qiankun = {
   master: {
-    apps: [
-      // {
-      //   entry: '//localhost:9528',
-      //   name: 'vue-admin-template',
-      // },
-      {
-        entry: '//localhost:5173',
-        name: 'vite-project',
-      },
-    ],
+    apps: staticApps,
   },
 };
-export const layout: RuntimeConfig['layout'] = (initData) => {
-  console.log(initData, 'initData');
+export const layout: RuntimeConfig['layout'] = () => {
   return {
     logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
     menu: {
@@ -81,15 +80,10 @@ export const layout: RuntimeConfig['layout'] = (initData) => {
       });
       return menuData;
     },
-    // itemRender(route) {
-    //   console.log(route, 'ttt');
-
-    //   return route;
-    // },
     siderMenuType: 'sub',
     rightContentRender(_, dom) {
       return (
-        <>
+        <Space>
           <Button
             type="primary"
             onClick={() => {
@@ -98,8 +92,17 @@ export const layout: RuntimeConfig['layout'] = (initData) => {
           >
             reload
           </Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              localStorage.setItem(MICRO_APPS, '');
+              window.location.reload();
+            }}
+          >
+            初始化菜单信息
+          </Button>
           {dom}
-        </>
+        </Space>
       );
     },
     logout() {
@@ -134,46 +137,38 @@ export function useQiankunStateForSlave() {
 }
 let extraRoutes = [];
 export function patchClientRoutes({ routes }) {
-  console.log(routes, '11');
   routes.forEach((item) => {
     if (item.path === '/') {
       item.routes.push(...extraRoutes);
-      // item.routes.push({
-      //   name: 'app3',
-      //   path: '/question',
-      //   microApp: 'app3',
-      // });
     }
   });
-  console.log(routes, '222');
 }
 
-export function onRouteChange({ location }) {
-  // console.log(location);
-  // if (location.pathname === '/login') {
-  //   localStorage.removeItem('initialState');
-  // }
-}
+// export function onRouteChange() {
+// }
 
 export async function render(oldRender) {
   console.log('render-----');
-  const data = await new Promise((reslove) => {
-    setTimeout(() => {
-      reslove([
-        getMicroReactApp('react1'),
-        getMicroReactApp('react2'),
-        getMicroVueApp('vue1'),
-        getMicroVueApp('vue2'),
-      ]);
-    }, 1000);
-  });
-  const routes = [];
+  const MICRO_APPS = 'MICRO_APPS';
+  let data = jsonParse(localStorage.getItem(MICRO_APPS) as string, [
+    ...staticApps.map((item) => ({
+      appName: item.name,
+      appEntry: item.entry,
+      appType: APP_TYPE.STATIC.value,
+    })),
+    getMicroReactApp('react1'),
+    getMicroReactApp('react2'),
+    getMicroVueApp('vue1'),
+    getMicroVueApp('vue2'),
+  ]);
+  localStorage.setItem(MICRO_APPS, JSON.stringify(data));
+  const routes: any[] = [];
   data.forEach((item) => {
     qiankun.master.apps.push({
       entry: item.appEntry,
       name: item.appName,
     });
-    item.appRoutes.forEach((i) => {
+    item.appRoutes?.forEach((i) => {
       routes.push({
         ...i,
         microApp: item.appName,

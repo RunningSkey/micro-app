@@ -14,7 +14,7 @@ const routes = [
     component: './Home',
   },
   {
-    name: '主应用页面',
+    name: '子应用列表',
     path: '/table',
     component: './Table',
   },

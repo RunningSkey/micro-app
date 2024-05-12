@@ -1,12 +1,11 @@
+import { APP_TYPE } from './constants';
+
 export const getMicroReactApp = (appName: string, appEntry?: string) => {
   return {
     appName: appName,
     appEntry: appEntry || '//localhost:8001',
+    appType: APP_TYPE.DYNAMIC.value,
     appRoutes: [
-      // {
-      //   name: appName + 'question',
-      //   path: '/' + 'theone' + '/question',
-      // },
       {
         name: appName + '_home',
         path: '/' + appName + '/home',
@@ -38,11 +37,8 @@ export const getMicroVueApp = (appName: string, appEntry?: string) => {
   return {
     appName: appName,
     appEntry: appEntry || '//localhost:9528',
+    appType: APP_TYPE.DYNAMIC.value,
     appRoutes: [
-      // {
-      //   name: appName + 'question',
-      //   path: '/' + 'theone' + '/question',
-      // },
       {
         name: appName + '_dashboard',
         path: '/' + appName + '/dashboard',
