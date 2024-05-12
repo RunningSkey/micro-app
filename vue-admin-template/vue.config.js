@@ -25,13 +25,17 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: process.env.NODE_ENV === "development" ? "/" : "./",
-  // outputDir: "dist",
+
+  outputDir:
+    process.env.NODE_ENV === "development"
+      ? "./"
+      : path.resolve(__dirname, "../build/vue2"),
   assetsDir: "static",
   lintOnSave: process.env.NODE_ENV === "development",
   productionSourceMap: false, //不打包 .map文件
   devServer: {
     port: port,
-    open: true,
+    // open: true,
     overlay: {
       warnings: false,
       errors: true,
@@ -60,16 +64,16 @@ module.exports = {
   },
   chainWebpack(config) {
     if (process.env.NODE_ENV === "production") {
-      config.plugin("compressionPlugin").use(
-        new CompressionPlugin({
-          filename: "[path].gz[query]",
-          algorithm: "gzip",
-          test: productionGzipExtensions,
-          threshold: 10240, // 对超过10k的数据压缩
-          minRatio: 0.8,
-          deleteOriginalAssets: true,
-        })
-      );
+      // config.plugin("compressionPlugin").use(
+      //   new CompressionPlugin({
+      //     filename: "[path].gz[query]",
+      //     algorithm: "gzip",
+      //     test: productionGzipExtensions,
+      //     threshold: 10240, // 对超过10k的数据压缩
+      //     minRatio: 0.8,
+      //     deleteOriginalAssets: true,
+      //   })
+      // );
     }
     // it can improve the speed of the first screen, it is recommended to turn on preload
     config.plugin("preload").tap(() => [
