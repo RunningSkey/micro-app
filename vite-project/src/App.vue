@@ -17,6 +17,8 @@ const masterProps = getCurrentInstance().appContext.config.globalProperties.$mas
       <nav>
         <RouterLink :to="'/home'">Home</RouterLink>
         <RouterLink :to="'/about'">About</RouterLink>
+        <RouterLink :to="'/menu/menu-item-1'">menu1</RouterLink>
+        <RouterLink :to="'/menu/menu-item-2'">menu2</RouterLink>
       </nav>
     </div>
   </header>

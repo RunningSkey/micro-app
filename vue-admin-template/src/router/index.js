@@ -1,8 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-const BASE_URL = window.__POWERED_BY_QIANKUN__
-  ? window.location.pathname.split("/")[1]
-  : "/";
+const BASE_URL = (window.__POWERED_BY_QIANKUN__ ? "/child" : "") + "/vue2/";
 Vue.use(Router);
 
 /* Layout */
@@ -170,18 +168,20 @@ export const constantRoutes = [
 
   // 404 page must be placed at the end !!!
   {
-    path: BASE_URL + "*",
+    path: BASE_URL + "/*",
     redirect: "/404",
     hidden: true,
   },
 ];
-const createRouter = () =>
-  new Router({
+const createRouter = () => {
+  console.log(constantRoutes, BASE_URL);
+  return new Router({
     mode: "history", // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes,
     base: BASE_URL,
   });
+};
 
 const router = createRouter();
 

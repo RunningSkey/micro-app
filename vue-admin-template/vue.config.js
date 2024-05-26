@@ -1,7 +1,8 @@
 "use strict";
 const path = require("path");
 const defaultSettings = require("./src/settings.js");
-const { name } = require("./package.json");
+// const { name } = require("./package.json");
+const name = "vue2";
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
@@ -24,12 +25,12 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: process.env.NODE_ENV === "development" ? "/" : "./",
-
+  //对应nginx的目录
+  publicPath: "/vue2/",
   outputDir:
     process.env.NODE_ENV === "development"
-      ? "./"
-      : path.resolve(__dirname, "../build/vue2"),
+      ? resolve("/dist")
+      : resolve("../build/child/vue2"),
   assetsDir: "static",
   lintOnSave: process.env.NODE_ENV === "development",
   productionSourceMap: false, //不打包 .map文件

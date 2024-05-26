@@ -23,27 +23,25 @@ const HomePage: React.FC = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: 'MicroAppWithMemoHistory-react1',
+      label: 'MicroAppWithMemoHistory-react',
       children: (
         <div>
           使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化,同时存在2个组件
           <Row>
             <Col span={12}>
               <MicroAppWithMemoHistory
-                key={'MicroAppWithMemoHistory-react1--1-'}
-                base={'/react1'}
-                url={'/react1/access'}
-                name="react1"
+                key={'MicroAppWithMemoHistory-react1'}
+                url={'/react/table'}
+                name="react"
                 autoSetLoading
                 masterHistory={H}
               />
             </Col>
             <Col span={12}>
               <MicroAppWithMemoHistory
-                key={'MicroAppWithMemoHistory-react1--2-'}
-                base={'/react1'}
-                url={'/react1/access'}
-                name="react1"
+                key={'MicroAppWithMemoHistory-react2'}
+                url={'/react/table'}
+                name="react"
                 autoSetLoading
                 masterHistory={H}
               />
@@ -75,8 +73,7 @@ const HomePage: React.FC = () => {
           使用 MicroAppWithMemoHistory 引入，地址栏不会发生变化
           <MicroAppWithMemoHistory
             key={'MicroAppWithMemoHistory--vite-project---1'}
-            // base={'/react1'}
-            url={'/vite-project/access'}
+            url={'/access'}
             name="vite-project"
             autoSetLoading
             masterHistory={H}
@@ -100,13 +97,7 @@ const HomePage: React.FC = () => {
     // <PageContainer ghost>
     <div className={styles.container}>
       <div style={{ position: 'relative' }}>
-        <Button
-          style={{
-            zIndex: 11,
-          }}
-          type="primary"
-          onClick={showModal}
-        >
+        <Button type="primary" onClick={showModal}>
           Open Modal
         </Button>
         <Modal
@@ -128,10 +119,9 @@ const HomePage: React.FC = () => {
           <div>
             {o && (
               <MicroAppWithMemoHistory
-                key={'MicroAppWithMemoHistory-react12---Modal'}
-                base={'/react1'}
-                url={'/react1/home'}
-                name="react1"
+                key={'MicroAppWithMemoHistory-react1'}
+                url={'/react/access'}
+                name="react"
                 autoSetLoading
                 masterHistory={H}
               />
@@ -141,10 +131,9 @@ const HomePage: React.FC = () => {
         <Button onClick={showDrawer}>showDrawer</Button>
         <Drawer width={800} title="Basic Drawer" onClose={onClose} open={open}>
           <MicroAppWithMemoHistory
-            key={'MicroAppWithMemoHistory-react13---Modal'}
-            base={'/react1'}
-            url={'/react1/table'}
-            name="react1"
+            key={'MicroAppWithMemoHistory-react1'}
+            url={'/react/home'}
+            name="react"
             autoSetLoading
             masterHistory={H}
           />

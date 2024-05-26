@@ -6,7 +6,9 @@ export default defineConfig({
   define: {
     'process.env': process.env,
   },
-  publicPath: process.env.APP_ENV === 'dev' ? '/' : './',
+  //对应nginx的目录
+  publicPath: '/',
+  base: '/',
   outputPath:
     process.env.APP_ENV === 'dev'
       ? '/'
@@ -23,7 +25,6 @@ export default defineConfig({
   layout: {
     title: 'micro-app',
   },
-  base: '/',
   qiankun: {
     master: {},
   },

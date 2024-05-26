@@ -192,6 +192,39 @@ const TableList: React.FC<unknown> = () => {
   ];
   return (
     <>
+      <div style={{ border: '1px solid' }}>
+        nginx部署配置
+        <code style={{ whiteSpace: 'pre-wrap' }}>{`
+          listen       4000;
+          server_name  localhost;
+
+        location / {
+            root  D:/Desktop/doc/MyGithub/micro-app/build;
+            index  index.html index.htm;
+            try_files $uri $uri/ /index.html;
+            error_page 404 /index.html;
+        }
+       
+        location /react{
+            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            index  index.html index.htm;
+            try_files $uri $uri/ /child/react/index.html;
+            error_page 404 /child/react/index.html;
+        }
+
+        location /vue2{
+            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            index  index.html index.htm;
+            try_files $uri $uri/ /child/vue2/index.html;
+            error_page 404 /child/vue2/index.html;
+        }
+        location /vite-project{
+            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            index  index.html index.htm;
+            try_files $uri $uri/ /child/vite-project/index.html;
+            error_page 404 /child/vite-project/index.html;
+        }`}</code>
+      </div>
       <ProTable<TABLE_API.SubApp>
         search={false}
         headerTitle="子应用列表"

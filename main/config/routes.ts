@@ -20,34 +20,30 @@ const routes = [
   },
   {
     name: 'vite-project',
-    path: '/vite-project',
-    routes: [
-      {
-        name: 'vite-project-home',
-        path: '/vite-project/home',
-        microApp: 'vite-project',
-        microAppProps: {
-          autoSetLoading: true,
-        },
-      },
-      {
-        name: 'vite-project-about',
-        path: '/vite-project/about',
-        microApp: 'vite-project',
-        microAppProps: {
-          autoSetLoading: true,
-        },
-      },
-      {
-        name: 'vite-project-home',
-        path: '/vite-project/*',
-        microApp: 'vite-project',
-        microAppProps: {
-          autoSetLoading: true,
-        },
-        hideInMenu: true,
-      },
-    ],
+    path: '/child/vite-project/*',
+    microApp: 'vite-project',
+    microAppProps: {
+      autoSetLoading: true,
+    },
+    hideInMenu: true,
+  },
+  {
+    name: 'react',
+    path: '/child/react/*',
+    microApp: 'react',
+    microAppProps: {
+      autoSetLoading: true,
+    },
+    hideInMenu: true,
+  },
+  {
+    name: 'vue2',
+    path: '/child/vue2/*',
+    microApp: 'vue2',
+    microAppProps: {
+      autoSetLoading: true,
+    },
+    hideInMenu: true,
   },
   {
     name: '404',

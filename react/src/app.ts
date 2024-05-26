@@ -13,9 +13,16 @@ export const layout = () => {
       locale: false,
     },
   };
+  console.log(window, 'ww');
+
   if (window.__POWERED_BY_QIANKUN__) {
     layout.menuRender = false;
     layout.headerRender = false;
+  } else {
+    layout.base = '/react/';
   }
   return layout;
 };
+export function patchClientRoutes({ routes }) {
+  console.log(routes, 'react-routes');
+}

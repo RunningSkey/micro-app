@@ -2,7 +2,7 @@
 
 以 umi4.0 选择 Ant Design Pro 作为基座搭建的微应用
 
-main、app1:
+main、react:
 
 - umi 4.0
 - antd 5.0

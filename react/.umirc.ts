@@ -2,18 +2,22 @@ import { defineConfig } from '@umijs/max';
 import path from 'path';
 console.log(process.env.APP_ENV, 'process.env.APP_ENV');
 
+// https://umijs.org/docs/guides/env-variables
+// Umi 不支持 .env.development / .env.production 的环境变量配置文件
 export default defineConfig({
   define: {
     'process.env': process.env,
   },
-  publicPath: process.env.APP_ENV === 'dev' ? '/' : './',
+  //对应nginx的目录
+  base: process.env.APP_ENV === 'prod' ? '/react/' : '/',
+  publicPath: process.env.APP_ENV === 'prod' ? '/react/' : '/',
   outputPath:
     process.env.APP_ENV === 'dev'
       ? '/'
-      : path.resolve(__dirname, '../build/app1'),
+      : path.join(__dirname, '../build/child/react'),
   antd: {
     configProvider: {
-      prefixCls: 'app1',
+      prefixCls: 'react',
     },
   },
   access: {},
