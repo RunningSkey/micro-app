@@ -18,15 +18,15 @@ const routes = [
     path: '/table',
     component: './Table',
   },
-  {
-    name: 'vite-project',
-    path: '/child/vite-project/*',
-    microApp: 'vite-project',
-    microAppProps: {
-      autoSetLoading: true,
-    },
-    hideInMenu: true,
-  },
+  // {
+  //   name: 'vite-project',
+  //   path: '/child/vite-project/*',
+  //   microApp: 'vite-project',
+  //   microAppProps: {
+  //     autoSetLoading: true,
+  //   },
+  //   hideInMenu: true,
+  // },
   {
     name: 'react',
     path: '/child/react/*',

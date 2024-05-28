@@ -5,6 +5,7 @@ import { Button, Space } from 'antd';
 import { useState } from 'react';
 import routes from '../config/routes';
 import { MICRO_APPS } from './constants';
+import { Route, getMicroApps } from './serviceMicro';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -31,10 +32,10 @@ export async function getInitialState(): Promise<{ name: string }> {
 }
 
 const staticApps = [
-  {
-    entry: '//localhost:4000/vite-project/',
-    name: 'vite-project',
-  },
+  // {
+  //   entry: '//localhost:4000/vite-project/',
+  //   name: 'vite-project',
+  // },
   {
     entry: '//localhost:4000/react/',
     name: 'react',
@@ -44,12 +45,39 @@ const staticApps = [
     name: 'vue2',
   },
 ];
+let microMenu: Route[] = [];
+
 /** 动态qiankun配置 */
-export const qiankun = {
-  master: {
-    apps: staticApps,
-  },
-};
+export const qiankun = (async () => {
+  const microApp = await getMicroApps();
+  return {
+    master: {
+      apps: [
+        ...staticApps,
+        ...microApp.map((it) => {
+          return {
+            entry: it.origin + it.base + '/',
+            name: it.name,
+          };
+        }),
+      ],
+      routes: microApp.map((item) => {
+        microMenu.push(...item.routes);
+        return {
+          name: item.name,
+          path: `${item.qiankunBase}${item.base}/*`,
+          microApp: item.name,
+          microAppProps: {
+            autoCaptureError: true,
+            autoSetLoading: true,
+            qiankunBase: item.qiankunBase,
+          },
+          hideInMenu: true,
+        };
+      }),
+    },
+  };
+})();
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -65,132 +93,77 @@ export const layout: RuntimeConfig['layout'] = () => {
       locale: false,
       request: async () => {
         await waitTime();
-        return routes
-          .concat([
-            {
-              name: 'vite-project',
-              path: '/child/vite-project/',
-              // redirect: '/child/vite-project/home',
-              // microApp: 'vite-project',
-              // microAppProps: {
-              //   autoSetLoading: true,
-              // },
-              routes: [
-                {
-                  name: 'vite-project-home',
-                  path: '/child/vite-project/home',
-                  // microApp: 'vite-project',
-                  // microAppProps: {
-                  //   autoSetLoading: true,
-                  // },
-                },
-                {
-                  name: 'vite-project-about',
-                  path: '/child/vite-project/about',
-                  // microApp: 'vite-project',
-                  // microAppProps: {
-                  //   autoSetLoading: true,
-                  // },
-                },
-                {
-                  name: 'vite-project-menu',
-                  path: '/child/vite-project/menu/',
-                  // redirect: '/child/vite-project/menu/menu-item-1',
-                  routes: [
-                    {
-                      name: 'vite-project-menu-item-1',
-                      path: '/child/vite-project/menu/menu-item-1',
-                      // microApp: 'vite-project',
-                      // microAppProps: {
-                      //   autoSetLoading: true,
-                      // },
-                    },
-                    {
-                      name: 'vite-project-menu-item-2',
-                      path: '/child/vite-project/menu/menu-item-2',
-                      // microApp: 'vite-project',
-                      // microAppProps: {
-                      //   autoSetLoading: true,
-                      // },
-                    },
-                  ],
-                },
-                // {
-                //   name: 'vite-project-home',
-                //   path: '/child/vite-project/*',
-                //   microApp: 'vite-project',
-                //   microAppProps: {
-                //     autoSetLoading: true,
-                //   },
-                //   hideInMenu: true,
-                // },
-              ],
-            },
-          ])
-          .concat([
-            {
-              name: 'react',
-              path: '/child/react/',
-              routes: [
-                {
-                  name: 'react-access',
-                  path: '/child/react/home',
-                },
-                {
-                  name: 'react-access',
-                  path: '/child/react/access',
-                },
-                {
-                  name: 'react-table',
-                  path: '/child/react/table',
-                },
-                {
-                  name: 'react-多层级',
-                  path: '/child/react/demo',
-                  routes: [
-                    {
-                      name: 'react-多层级-权限演示',
-                      path: '/child/react/demo/access',
-                    },
-                    {
-                      name: 'react-多层级-CRUD 示例',
-                      path: '/child/react/demo/table',
-                    },
-                  ],
-                },
-              ],
-            },
-          ])
-          .concat([
-            {
-              name: 'vue2',
-              path: '/child/vue2/',
-              routes: [
-                {
-                  name: 'vue2' + '_dashboard',
-                  path: '/child/' + 'vue2' + '/dashboard',
-                },
-                {
-                  name: 'vue2' + '_example',
-                  path: '/child/' + 'vue2' + '/example',
-                  routes: [
-                    {
-                      name: 'vue2' + '_example_table',
-                      path: '/child/' + 'vue2' + '/example/table',
-                    },
-                    {
-                      name: 'vue2' + '_example_tree',
-                      path: '/child/' + 'vue2' + '/example/tree',
-                    },
-                  ],
-                },
-                {
-                  name: 'vue2' + '_form',
-                  path: '/child/' + 'vue2' + '/form/index',
-                },
-              ],
-            },
-          ]);
+        console.log(microMenu, 'microMenu');
+
+        return (
+          routes
+            //@ts-ignore
+            .concat(microMenu)
+            .concat([
+              {
+                name: 'react',
+                path: '/child/react/',
+                routes: [
+                  {
+                    name: 'react-access',
+                    path: '/child/react/home',
+                  },
+                  {
+                    name: 'react-access',
+                    path: '/child/react/access',
+                  },
+                  {
+                    name: 'react-table',
+                    path: '/child/react/table',
+                  },
+                  {
+                    name: 'react-多层级',
+                    path: '/child/react/demo',
+                    routes: [
+                      {
+                        name: 'react-多层级-权限演示',
+                        path: '/child/react/demo/access',
+                      },
+                      {
+                        name: 'react-多层级-CRUD 示例',
+                        path: '/child/react/demo/table',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ])
+            .concat([
+              {
+                name: 'vue2',
+                path: '/child/vue2/',
+                routes: [
+                  {
+                    name: 'vue2' + '_dashboard',
+                    path: '/child/' + 'vue2' + '/dashboard',
+                  },
+                  {
+                    name: 'vue2' + '_example',
+                    path: '/child/' + 'vue2' + '/example',
+                    routes: [
+                      {
+                        name: 'vue2' + '_example_table',
+                        path: '/child/' + 'vue2' + '/example/table',
+                      },
+                      {
+                        name: 'vue2' + '_example_tree',
+                        path: '/child/' + 'vue2' + '/example/tree',
+                      },
+                    ],
+                  },
+                  {
+                    name: 'vue2' + '_form',
+                    path: '/child/' + 'vue2' + '/form/index',
+                  },
+                ],
+              },
+            ])
+        );
       },
     },
     breadcrumbProps: {
@@ -200,30 +173,6 @@ export const layout: RuntimeConfig['layout'] = () => {
     contentStyle: {
       padding: 0,
     },
-
-    // menuDataRender(menuData) {
-    //   console.log(menuData, 'menuData');
-    //   // const microApp = {};
-    //   // menuData = menuData.filter((item) => {
-    //   //   if (item.microApp) {
-    //   //     if (microApp[item.microApp]) {
-    //   //       microApp[item.microApp].push(item);
-    //   //     } else {
-    //   //       microApp[item.microApp] = [item];
-    //   //     }
-    //   //     return false;
-    //   //   }
-    //   //   return true;
-    //   // });
-    //   // Object.entries(microApp).forEach(([key, value]) => {
-    //   //   menuData.push({
-    //   //     name: key,
-    //   //     path: '/child/' + key,
-    //   //     routes: value,
-    //   //   });
-    //   // });
-    //   return menuData;
-    // },
     siderMenuType: 'sub',
     rightContentRender(_, dom) {
       return (
@@ -279,73 +228,51 @@ export function useQiankunStateForSlave() {
     masterHistory: history,
   };
 }
-// let extraRoutes = [];
-// export function patchClientRoutes({ routes }) {
-//   routes.forEach((item) => {
-//     if (item.path === '/') {
-//       item.routes.push(...extraRoutes);
-//     }
-//   });
+// let extraRoutes: Route[] = [];
+// export function patchClientRoutes({ routes }: { routes: Route[] }) {
+//   console.log(routes, 'ttt');
+
+//   // routes.forEach((item) => {
+//   //   if (item.path === '/') {
+//   //     const current = item.routes?.find((it) => it.path === '/');
+//   //     if (!current) return;
+//   //     current.routes = (current.routes || []).concat(
+//   //       extraRoutes.map((it) => ({
+//   //         ...it,
+//   //       })),
+//   //     );
+//   //     current.children = (current.children || []).concat(
+//   //       extraRoutes.map((it) => ({
+//   //         ...it,
+//   //         element: <MicroApp name={it.name} />,
+//   //       })),
+//   //     );
+//   //   }
+//   // });
 // }
 
-// // export function onRouteChange() {
-// // }
+export function onRouteChange() {
+  //后面通过获取子应用菜单 过滤跳转403 或 404
+  console.log(location.pathname, 'location.pathname');
+}
 
-// export async function render(oldRender) {
-//   console.log('render-----');
-//   // const MICRO_APPS = 'MICRO_APPS';
-//   // let data = jsonParse(localStorage.getItem(MICRO_APPS) as string, [
-//   //   // ...staticApps.map((item) => ({
-//   //   //   appName: item.name,
-//   //   //   appEntry: item.entry,
-//   //   //   appType: APP_TYPE.STATIC.value,
-//   //   // })),
-//   //   getMicroReactApp('react1'),
-//   //   getMicroReactApp('react2'),
-//   //   getMicroVueApp('vue1'),
-//   //   getMicroVueApp('vue2'),
-//   // ]);
-//   // localStorage.setItem(MICRO_APPS, JSON.stringify(data));
-//   // const routes: any[] = [];
-//   // data.forEach((item) => {
-//   //   qiankun.master.apps.push({
-//   //     entry: item.appEntry,
-//   //     name: item.appName,
-//   //   });
-//   //   item.appRoutes?.forEach((i) => {
-//   //     routes.push({
-//   //       ...i,
-//   //       microApp: item.appName,
-//   //       element: (
-//   //         <Layouts>
-//   //           <Button onClick={() => window.open(item.appEntry)}>
-//   //             子应用： {item.appEntry}
-//   //           </Button>
-//   //           <MicroApp
-//   //             key={item.appName + '/' + item.appName}
-//   //             name={item.appName}
-//   //             base={'/child/' + item.appName}
-//   //             autoSetLoading
-//   //           />
-//   //         </Layouts>
-//   //       ),
-//   //     });
-//   //   });
-//   // });
-//   const extraQiankuns = [
-//     {
-//       entry: '//localhost:4000/react/',
-//       name: 'react',
-//     },
-//   ];
-//   extraRoutes = extraQiankuns.map((item) => ({
-//     name: item.name,
-//     path: `/child/${item.name}/*`,
-//     microApp: item.name,
-//     microAppProps: {
-//       autoSetLoading: true,
-//     },
-//     hideInMenu: true,
-//   }));
+// export async function render(oldRender: any) {
+//   console.log(oldRender, 'oldRender');
+//   const microApp = getMicroApps();
+//   //代理子应用全部路由
+//   const extraMenu: Route[] = [];
+//   extraRoutes = microApp.map((item) => {
+//     extraMenu.push(...item.routes);
+//     return {
+//       name: item.name,
+//       path: `${item.qiankunBase}${item.base}/*`,
+//       microApp: item.name,
+//       microAppProps: {
+//         autoSetLoading: true,
+//       },
+//       hideInMenu: true,
+//     };
+//   });
+//   microMenu = extraMenu;
 //   oldRender();
 // }
