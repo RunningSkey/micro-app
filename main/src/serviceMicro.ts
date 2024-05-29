@@ -96,11 +96,11 @@ export const getMicroApps = () => {
     {
       name: 'vite-project',
       /** 子应用独立访问origin地址 */
-      origin: '//localhost:4000',
+      origin: '//localhost:5174',
       /** 子应用独立访问路由base地址 */
       base: '/vite-project',
       /** 告知子应用在qiankun环境下的路由前缀 */
-      qiankunBase: '/child',
+      qiankunBase: '/child1',
       routes: [
         {
           name: 'vite-project',
@@ -127,6 +127,88 @@ export const getMicroApps = () => {
                   path: '/menu/menu-item-2',
                 },
               ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'react',
+      /** 子应用独立访问origin地址 */
+      origin: '//localhost:8001',
+      /** 子应用独立访问路由base地址 */
+      base: '/react',
+      /** 告知子应用在qiankun环境下的路由前缀 */
+      qiankunBase: '/child2',
+      routes: [
+        {
+          name: 'react',
+          path: '/',
+          routes: [
+            {
+              name: 'react-access',
+              path: '/home',
+            },
+            {
+              name: 'react-access',
+              path: '/access',
+            },
+            {
+              name: 'react-table',
+              path: '/table',
+            },
+            {
+              name: 'react-多层级',
+              path: '/demo/',
+              routes: [
+                {
+                  name: 'react-多层级-权限演示',
+                  path: '/demo/access',
+                },
+                {
+                  name: 'react-多层级-CRUD 示例',
+                  path: '/demo/table',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'vue2',
+      /** 子应用独立访问origin地址 */
+      origin: '//localhost:9528',
+      /** 子应用独立访问路由base地址 */
+      base: '/vue2',
+      /** 告知子应用在qiankun环境下的路由前缀 */
+      qiankunBase: '/child3',
+      routes: [
+        {
+          name: 'vue2',
+          path: '/',
+          routes: [
+            {
+              name: 'vue2_dashboard',
+              path: '/dashboard',
+            },
+            {
+              name: 'vue2' + '_example',
+              path: '/example/',
+              routes: [
+                {
+                  name: 'vue2_example_table',
+                  path: '/example/table',
+                },
+                {
+                  name: 'vue2_example_tree',
+                  path: '/example/tree',
+                },
+              ],
+            },
+            {
+              name: 'vue2_form',
+              path: '/form/index',
             },
           ],
         },

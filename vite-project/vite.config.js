@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
   return {
     //对应nginx的目录
     base: env.VITE_BASE_URL,
+    server: {
+      port: env.VITE_PORT
+    },
     define: {
       env: JSON.stringify(env)
     },

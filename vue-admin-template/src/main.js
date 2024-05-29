@@ -10,10 +10,10 @@ import "@/styles/index.scss"; // global css
 
 import App from "./App";
 import store from "./store";
-import router from "./router";
+import { createRouter } from "./router";
 
 import "@/icons"; // icon
-import "@/permission"; // permission control
+import { initPermission } from "@/permission"; // permission control
 
 /**
  * If you don't want to use mock-server
@@ -38,17 +38,20 @@ Vue.config.productionTip = false;
 let instance = null;
 
 export const render = (props) => {
+  const router = createRouter((props.qiankunBase || "") + "/vue2");
+  console.log(router, "router");
   instance = new Vue({
     el: "#app",
     router,
     store,
     render: (h) => h(App),
   });
+  initPermission(router);
   Vue.prototype.$masterProps = props;
 };
 
 if (!window.__POWERED_BY_QIANKUN__) {
-  render();
+  render({});
 }
 // 生命周期的钩子函数
 // 导出第一次进入当前子应用的钩子函数

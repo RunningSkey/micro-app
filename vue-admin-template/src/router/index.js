@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-const BASE_URL = (window.__POWERED_BY_QIANKUN__ ? "/child" : "") + "/vue2/";
 Vue.use(Router);
 
 /* Layout */
@@ -167,28 +166,40 @@ export const constantRoutes = [
   },
 
   // 404 page must be placed at the end !!!
-  {
-    path: BASE_URL + "/*",
-    redirect: "/404",
-    hidden: true,
-  },
+  // {
+  //   path: "*",
+  //   redirect: "/404",
+  //   hidden: true,
+  // },
 ];
-const createRouter = () => {
-  console.log(constantRoutes, BASE_URL);
+
+let baseUrl = "";
+export const createRouter = (base) => {
+  baseUrl = base;
   return new Router({
     mode: "history", // require service support
     scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes,
-    base: BASE_URL,
+    routes: constantRoutes.concat(
+      window.__POWERED_BY_QIANKUN__
+        ? []
+        : [
+            {
+              path: base + "/*",
+              redirect: "/404",
+              hidden: true,
+            },
+          ]
+    ),
+    base: base,
   });
 };
 
-const router = createRouter();
+// const router = createRouter();
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter = createRouter();
+  const newRouter = createRouter(baseUrl);
   router.matcher = newRouter.matcher; // reset router
 }
 
-export default router;
+// export default router;

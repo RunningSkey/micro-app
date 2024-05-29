@@ -15,7 +15,8 @@ const render = (props) => {
     .use(createPinia())
     .use(
       createRouters({
-        memoryHistory: props.memoryHistory
+        memoryHistory: props.memoryHistory,
+        qiankunBase: props.qiankunBase
       })
     )
     .mount(props.container?.querySelector('#app') || '#app')
@@ -33,7 +34,7 @@ export async function bootstrap(props) {
 
 // 导出每次创建挂载时的钩子函数
 export async function mount(props) {
-  console.log(props, 'mount-------------',qiankunWindow,'qiankunWindow')
+  console.log(props, 'mount-------------', qiankunWindow, 'qiankunWindow')
   props.setLoading(false)
   render(props) // 核心在这里，每次挂载的时候，执行我们所封装的render函数
 }

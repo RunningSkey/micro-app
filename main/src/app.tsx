@@ -31,20 +31,20 @@ export async function getInitialState(): Promise<{ name: string }> {
   return { ...userInfo };
 }
 
-const staticApps = [
-  // {
-  //   entry: '//localhost:4000/vite-project/',
-  //   name: 'vite-project',
-  // },
-  {
-    entry: '//localhost:4000/react/',
-    name: 'react',
-  },
-  {
-    entry: '//localhost:4000/vue2/',
-    name: 'vue2',
-  },
-];
+// const staticApps = [
+//   // {
+//   //   entry: '//localhost:4000/vite-project/',
+//   //   name: 'vite-project',
+//   // },
+//   // {
+//   //   entry: '//localhost:4000/react/',
+//   //   name: 'react',
+//   // },
+//   // {
+//   //   entry: '//localhost:4000/vue2/',
+//   //   name: 'vue2',
+//   // },
+// ];
 let microMenu: Route[] = [];
 
 /** 动态qiankun配置 */
@@ -53,7 +53,7 @@ export const qiankun = (async () => {
   return {
     master: {
       apps: [
-        ...staticApps,
+        // ...staticApps,
         ...microApp.map((it) => {
           return {
             entry: it.origin + it.base + '/',
@@ -93,76 +93,10 @@ export const layout: RuntimeConfig['layout'] = () => {
       locale: false,
       request: async () => {
         await waitTime();
-        console.log(microMenu, 'microMenu');
-
         return (
           routes
             //@ts-ignore
             .concat(microMenu)
-            .concat([
-              {
-                name: 'react',
-                path: '/child/react/',
-                routes: [
-                  {
-                    name: 'react-access',
-                    path: '/child/react/home',
-                  },
-                  {
-                    name: 'react-access',
-                    path: '/child/react/access',
-                  },
-                  {
-                    name: 'react-table',
-                    path: '/child/react/table',
-                  },
-                  {
-                    name: 'react-多层级',
-                    path: '/child/react/demo',
-                    routes: [
-                      {
-                        name: 'react-多层级-权限演示',
-                        path: '/child/react/demo/access',
-                      },
-                      {
-                        name: 'react-多层级-CRUD 示例',
-                        path: '/child/react/demo/table',
-                      },
-                    ],
-                  },
-                ],
-              },
-            ])
-            .concat([
-              {
-                name: 'vue2',
-                path: '/child/vue2/',
-                routes: [
-                  {
-                    name: 'vue2' + '_dashboard',
-                    path: '/child/' + 'vue2' + '/dashboard',
-                  },
-                  {
-                    name: 'vue2' + '_example',
-                    path: '/child/' + 'vue2' + '/example',
-                    routes: [
-                      {
-                        name: 'vue2' + '_example_table',
-                        path: '/child/' + 'vue2' + '/example/table',
-                      },
-                      {
-                        name: 'vue2' + '_example_tree',
-                        path: '/child/' + 'vue2' + '/example/tree',
-                      },
-                    ],
-                  },
-                  {
-                    name: 'vue2' + '_form',
-                    path: '/child/' + 'vue2' + '/form/index',
-                  },
-                ],
-              },
-            ])
         );
       },
     },

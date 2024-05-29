@@ -3,9 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 
 console.log(import.meta.env, 'import.meta.env')
-export const createRouters = ({ memoryHistory }) => {
-  const base = (qiankunWindow.__POWERED_BY_QIANKUN__ ? '/child' : '') + import.meta.env.BASE_URL
-  console.log(base, 'base-------')
+export const createRouters = ({ memoryHistory, qiankunBase }) => {
+  const base = (qiankunWindow.__POWERED_BY_QIANKUN__ ? qiankunBase : '') + import.meta.env.BASE_URL
   return createRouter({
     history: memoryHistory ? createMemoryHistory(base) : createWebHistory(base),
     routes: [
