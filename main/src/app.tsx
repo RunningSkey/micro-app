@@ -45,10 +45,18 @@ export async function getInitialState(): Promise<{ name: string }> {
 //   //   name: 'vue2',
 //   // },
 // ];
+const waitTime = (time: number = 100) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, time);
+  });
+};
 let microMenu: Route[] = [];
 
 /** 动态qiankun配置 */
 export const qiankun = (async () => {
+  await waitTime();
   const microApp = await getMicroApps();
   return {
     master: {
@@ -79,20 +87,12 @@ export const qiankun = (async () => {
   };
 })();
 
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
 export const layout: RuntimeConfig['layout'] = () => {
   return {
     logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
     menu: {
       locale: false,
       request: async () => {
-        await waitTime();
         return (
           routes
             //@ts-ignore

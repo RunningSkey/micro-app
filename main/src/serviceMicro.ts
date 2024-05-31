@@ -1,70 +1,5 @@
-import { APP_TYPE, MICRO_APPS } from './constants';
+import { MICRO_APPS } from './constants';
 import { jsonParse } from './utils';
-
-export const getMicroReactApp = (appName: string, appEntry?: string) => {
-  return {
-    appName: appName,
-    appEntry: appEntry || '//localhost:8001',
-    appType: APP_TYPE.DYNAMIC.value,
-    appRoutes: [
-      {
-        name: appName + '_home',
-        path: '/' + appName + '/home',
-      },
-      {
-        name: appName + '_access',
-        path: '/' + appName + '/access',
-      },
-      {
-        name: appName + '_table',
-        path: '/' + appName + '/table',
-      },
-      {
-        name: '多层级',
-        path: '/' + appName + '/demo',
-        redirect: '/' + appName + '/demo/table',
-        children: [
-          {
-            name: ' CRUD 示例',
-            path: '/' + appName + '/demo/table',
-          },
-        ],
-      },
-    ],
-  };
-};
-
-export const getMicroVueApp = (appName: string, appEntry?: string) => {
-  return {
-    appName: appName,
-    appEntry: appEntry || '//localhost:9528',
-    appType: APP_TYPE.DYNAMIC.value,
-    appRoutes: [
-      {
-        name: appName + '_dashboard',
-        path: '/' + appName + '/dashboard',
-      },
-      {
-        name: appName + '_example',
-        path: '/' + appName + '/example',
-        children: [
-          {
-            name: appName + '_example_table',
-            path: '/' + appName + '/example/table',
-          },
-          {
-            name: appName + '_example_tree',
-            path: '/' + appName + '/example/tree',
-          },
-        ],
-      },
-      {
-        name: appName + '_form',
-        path: '/' + appName + '/form/index',
-      },
-    ],
-  };
-};
 
 export type Route = {
   name: string;
@@ -96,7 +31,7 @@ export const getMicroApps = () => {
     {
       name: 'vite-project',
       /** 子应用独立访问origin地址 */
-      origin: '//localhost:5174',
+      origin: '//localhost:9002',
       /** 子应用独立访问路由base地址 */
       base: '/vite-project',
       /** 告知子应用在qiankun环境下的路由前缀 */
@@ -135,7 +70,7 @@ export const getMicroApps = () => {
     {
       name: 'react',
       /** 子应用独立访问origin地址 */
-      origin: '//localhost:8001',
+      origin: '//localhost:9001',
       /** 子应用独立访问路由base地址 */
       base: '/react',
       /** 告知子应用在qiankun环境下的路由前缀 */
@@ -146,7 +81,7 @@ export const getMicroApps = () => {
           path: '/',
           routes: [
             {
-              name: 'react-access',
+              name: 'react-home',
               path: '/home',
             },
             {
@@ -178,7 +113,7 @@ export const getMicroApps = () => {
     {
       name: 'vue2',
       /** 子应用独立访问origin地址 */
-      origin: '//localhost:9528',
+      origin: '//localhost:9003',
       /** 子应用独立访问路由base地址 */
       base: '/vue2',
       /** 告知子应用在qiankun环境下的路由前缀 */
@@ -216,8 +151,11 @@ export const getMicroApps = () => {
     },
   ].map((item) => ({
     ...item,
+    origin: process.env.APP_ENV === 'prod' ? '//localhost:4000' : item.origin,
     routes: formatMicroRoutes(item.qiankunBase, item.base, item.routes),
   }));
+  console.log(process.env.APP_ENV);
+
   const resValue = jsonParse(localStorage.getItem(MICRO_APPS), defaultValue);
   localStorage.setItem(MICRO_APPS, JSON.stringify(resValue));
   return resValue;

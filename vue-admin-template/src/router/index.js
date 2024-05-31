@@ -184,7 +184,7 @@ export const createRouter = (base) => {
         ? []
         : [
             {
-              path: base + "/*",
+              path: "*",
               redirect: "/404",
               hidden: true,
             },

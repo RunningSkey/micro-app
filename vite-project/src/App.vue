@@ -2,9 +2,11 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
+import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 console.log(import.meta.env, '')
 const logo = new URL('@/assets/logo.svg', import.meta.url)
 const masterProps = getCurrentInstance().appContext.config.globalProperties.$masterProps || {}
+const appPath = qiankunWindow.__INJECTED_PUBLIC_PATH_BY_QIANKUN__
 </script>
 
 <template>
@@ -15,6 +17,15 @@ const masterProps = getCurrentInstance().appContext.config.globalProperties.$mas
       <HelloWorld msg="You did it!" />
 
       <nav>
+        <a
+          v-show="!!appPath"
+          :href="appPath"
+          target="_blank"
+          :style="{
+            color: 'red'
+          }"
+          >打开独立应用：{{ appPath }}</a
+        >
         <RouterLink :to="'/home'">Home</RouterLink>
         <RouterLink :to="'/about'">About</RouterLink>
         <RouterLink :to="'/menu/menu-item-1'">menu1</RouterLink>
