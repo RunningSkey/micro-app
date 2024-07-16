@@ -1,6 +1,14 @@
 import { MICRO_APPS } from './constants';
 import { jsonParse } from './utils';
 
+export type MicroAppItem = {
+  name: string;
+  origin: string;
+  base: string;
+  qiankunBase: string;
+  routes: Route[];
+};
+
 export type Route = {
   name: string;
   path: string;
@@ -10,10 +18,10 @@ export type Route = {
 const formatMicroRoutes = (
   qiankunBase: string,
   base: string,
-  routes: Route[],
-): Route[] => {
+  routes?: Route[],
+): Route[] | undefined => {
   if (!Array.isArray(routes) || routes.length === 0) {
-    return [];
+    return undefined;
   }
   const result: Route[] = [];
   for (let item of routes) {
@@ -24,7 +32,7 @@ const formatMicroRoutes = (
     };
     result.push(formattedItem);
   }
-  return result;
+  return result.length > 0 ? result : undefined;
 };
 export const getMicroApps = () => {
   const defaultValue = [
@@ -38,7 +46,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child1',
       routes: [
         {
-          name: 'vite-project',
+          name: 'vite-project-root',
           path: '/',
           routes: [
             {
@@ -77,7 +85,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child2',
       routes: [
         {
-          name: 'react',
+          name: 'react-root',
           path: '/',
           routes: [
             {
@@ -120,7 +128,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child3',
       routes: [
         {
-          name: 'vue2',
+          name: 'vue2-root',
           path: '/',
           routes: [
             {
@@ -154,8 +162,6 @@ export const getMicroApps = () => {
     origin: process.env.APP_ENV === 'prod' ? '//localhost:4000' : item.origin,
     routes: formatMicroRoutes(item.qiankunBase, item.base, item.routes),
   }));
-  console.log(process.env.APP_ENV);
-
   const resValue = jsonParse(localStorage.getItem(MICRO_APPS), defaultValue);
   localStorage.setItem(MICRO_APPS, JSON.stringify(resValue));
   return resValue;

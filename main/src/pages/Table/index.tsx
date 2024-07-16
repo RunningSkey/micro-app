@@ -1,29 +1,41 @@
-import { APP_TYPE, MICRO_APPS } from '@/constants';
+import { MICRO_APPS } from '@/constants';
+import { MicroAppItem } from '@/serviceMicro';
 import { jsonParse } from '@/utils';
 import {
   ActionType,
   ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Divider, Tag, message } from 'antd';
+import { Button, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import ConfigRoutesForm from './components/ConfigRoutesForm';
 import CreateForm from './components/CreateForm';
-import { TABLE_API } from './typings';
 
-const disableDeleteApps = ['react1', 'vite-project'];
+const disableDeleteApps = ['react', 'vite-project'];
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: TABLE_API.SubApp) => {
+const handleAdd = async (fields: MicroAppItem) => {
   const hide = message.loading('正在添加');
   try {
-    const res = jsonParse<TABLE_API.SubApp[]>(
-      localStorage.getItem(MICRO_APPS),
-      [],
+    const res = jsonParse<MicroAppItem[]>(localStorage.getItem(MICRO_APPS), []);
+    localStorage.setItem(
+      MICRO_APPS,
+      JSON.stringify([
+        ...res,
+        {
+          ...fields,
+          new: true,
+          routes: [
+            {
+              path: fields.qiankunBase + fields.base + '/',
+              name: fields.name + '-root',
+            },
+          ],
+        },
+      ]),
     );
-    localStorage.setItem(MICRO_APPS, JSON.stringify([...res, fields]));
     hide();
     message.success('添加成功');
     return true;
@@ -38,20 +50,17 @@ const handleAdd = async (fields: TABLE_API.SubApp) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: TABLE_API.SubApp) => {
+const handleUpdate = async (fields: MicroAppItem) => {
   const hide = message.loading('正在配置');
   console.log(fields);
   try {
-    const res = jsonParse<TABLE_API.SubApp[]>(
-      localStorage.getItem(MICRO_APPS),
-      [],
+    const res = jsonParse<MicroAppItem[]>(localStorage.getItem(MICRO_APPS), []);
+    const updateRes = res.map((item) =>
+      item.name === fields.name ? { ...item, ...fields } : item,
     );
-    localStorage.setItem(
-      MICRO_APPS,
-      JSON.stringify(
-        res.map((item) => (item.appName === fields.appName ? fields : item)),
-      ),
-    );
+    console.log(updateRes, 'uuu');
+
+    localStorage.setItem(MICRO_APPS, JSON.stringify(updateRes));
     hide();
     message.success('配置成功');
     return true;
@@ -66,20 +75,15 @@ const handleUpdate = async (fields: TABLE_API.SubApp) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TABLE_API.SubApp[]) => {
+const handleRemove = async (selectedRows: MicroAppItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    const res = jsonParse<TABLE_API.SubApp[]>(
-      localStorage.getItem(MICRO_APPS),
-      [],
-    );
+    const res = jsonParse<MicroAppItem[]>(localStorage.getItem(MICRO_APPS), []);
     localStorage.setItem(
       MICRO_APPS,
       JSON.stringify(
-        res.filter(
-          (item) => !selectedRows.find((i) => i.appName === item.appName),
-        ),
+        res.filter((item) => !selectedRows.find((i) => i.name === item.name)),
       ),
     );
     hide();
@@ -96,29 +100,12 @@ const TableList: React.FC<unknown> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [configRoutesModalVisible, handleConfigRoutesModalVisible] =
     useState<boolean>(false);
-  const [currentRow, setCurrentRow] = useState<TABLE_API.SubApp>();
+  const [currentRow, setCurrentRow] = useState<MicroAppItem>();
   const actionRef = useRef<ActionType>();
-  const columns: ProDescriptionsItemProps<TABLE_API.SubApp>[] = [
+  const columns: ProDescriptionsItemProps<MicroAppItem>[] = [
     {
-      title: '应用类型',
-      dataIndex: 'appType',
-      valueEnum: APP_TYPE,
-      tooltip: '静态应用是在代码中写死的，无法动态修改',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: '应用类型',
-          },
-        ],
-      },
-      render(text, record) {
-        return <Tag color={APP_TYPE[record['appType']]?.color}>{text}</Tag>;
-      },
-    },
-    {
-      title: '子应用名称',
-      dataIndex: 'appName',
+      title: '子应用名称/菜单名称',
+      dataIndex: 'name',
       formItemProps: {
         rules: [
           {
@@ -130,58 +117,135 @@ const TableList: React.FC<unknown> = () => {
     },
     {
       title: '子应用地址',
-      dataIndex: 'appEntry',
+      dataIndex: 'origin',
       valueType: 'text',
       formItemProps: {
         rules: [
           {
             required: true,
-            message: '子应用名称',
+            message: '子应用地址',
           },
         ],
       },
-      render(text) {
-        return <a onClick={() => window.open(text as string)}>{text}</a>;
+      render(_, row) {
+        if (!row.origin) return '-';
+        return (
+          <a
+            href={row.origin + row.base + '/'}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {row.origin}
+          </a>
+        );
       },
     },
-
     {
-      title: '是否被MicroAppWithMemoHistory引用',
-      dataIndex: '_appName_',
-      hideInForm: true,
-      render(_, record) {
-        return disableDeleteApps.find((i) => i === record.appName)
-          ? '是'
-          : '否';
+      title: '子应用基础路径',
+      dataIndex: 'base',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '子应用基础路径',
+          },
+        ],
+      },
+      render(base, row) {
+        if (!row.origin) return '-';
+        return base;
       },
     },
+    {
+      title: '子应用在主应用的基础路径',
+      dataIndex: 'qiankunBase',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '子应用基础路径',
+          },
+        ],
+      },
+      render(qiankunBase, row) {
+        if (!row.origin) return '-';
+        return qiankunBase;
+      },
+    },
+    {
+      title: '子应用在主应用的路径',
+      dataIndex: 'path',
+      hideInForm: true,
+      render(href, row) {
+        if (row.origin) return '-';
+        return (
+          <a href={href} target="_blank" rel="noreferrer">
+            {href}
+          </a>
+        );
+      },
+    },
+    // {
+    //   title: '是否被MicroAppWithMemoHistory引用',
+    //   dataIndex: '_name_',
+    //   hideInForm: true,
+    //   render(_, row) {
+    //     if (!row.origin) return '-';
+    //     return disableDeleteApps.find((i) => i === row.name) ? '是' : '否';
+    //   },
+    // },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => {
-        if (record.appType !== APP_TYPE.DYNAMIC.value) return null;
+      width: '150px',
+      render: (_, row) => {
+        if (!row.origin) return;
         return (
           <>
-            <a
+            <Button
+              hidden={!row.origin}
               onClick={() => {
                 handleConfigRoutesModalVisible(true);
-                setCurrentRow(record);
+                setCurrentRow(row);
               }}
+              type="link"
+              size="small"
             >
-              配置
-            </a>
-            <Divider type="vertical" />
+              配置子应用
+            </Button>
             <Button
-              hidden={!!disableDeleteApps.find((i) => i === record.appName)}
+              hidden={!!row.origin}
+              onClick={() => {
+                handleConfigRoutesModalVisible(true);
+                setCurrentRow(row);
+              }}
+              type="link"
+              size="small"
+            >
+              配置菜单
+            </Button>
+            <Button
+              hidden={!!row.origin}
+              onClick={() => {
+                handleConfigRoutesModalVisible(true);
+                setCurrentRow(row);
+              }}
+              type="link"
+              size="small"
+            >
+              添加下级
+            </Button>
+            <Button
               onClick={async () => {
-                const success = await handleRemove([record]);
+                const success = await handleRemove([row]);
                 if (success && actionRef.current) {
                   actionRef.current.reload();
                 }
               }}
               type="link"
               danger
+              size="small"
             >
               删除
             </Button>
@@ -206,33 +270,37 @@ const TableList: React.FC<unknown> = () => {
         }
        
         location /react{
-            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            root  D:\\Desktop\\doc\\MyGithub\\micro-app\\build\\child;
             index  index.html index.htm;
             try_files $uri $uri/ /child/react/index.html;
             error_page 404 /child/react/index.html;
         }
 
         location /vue2{
-            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            root  D:\\Desktop\\doc\\MyGithub\\micro-app\\build\\child;
             index  index.html index.htm;
             try_files $uri $uri/ /child/vue2/index.html;
             error_page 404 /child/vue2/index.html;
         }
         location /vite-project{
-            root  D:\Desktop\doc\MyGithub\micro-app\build\child;
+            root  D:\\Desktop\\doc\\MyGithub\\micro-app\\build\\child;
             index  index.html index.htm;
             try_files $uri $uri/ /child/vite-project/index.html;
             error_page 404 /child/vite-project/index.html;
         }`}</code>
       </div>
-      <ProTable<TABLE_API.SubApp>
+      <ProTable<MicroAppItem>
+        size="small"
         search={false}
         headerTitle="子应用列表"
         actionRef={actionRef}
-        rowKey="appName"
+        rowKey="name"
         // search={{
         //   labelWidth: 120,
         // }}
+        expandable={{
+          childrenColumnName: 'routes',
+        }}
         toolBarRender={() => [
           <Button
             key="1"
@@ -243,7 +311,7 @@ const TableList: React.FC<unknown> = () => {
           </Button>,
         ]}
         request={async () => {
-          const data: TABLE_API.SubApp[] = await new Promise((resolve) => {
+          const data: MicroAppItem[] = await new Promise((resolve) => {
             setTimeout(() => {
               resolve(
                 jsonParse(localStorage.getItem(MICRO_APPS) as string, []),
@@ -263,7 +331,7 @@ const TableList: React.FC<unknown> = () => {
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
       >
-        <ProTable<TABLE_API.SubApp, TABLE_API.SubApp>
+        <ProTable<MicroAppItem, MicroAppItem>
           onSubmit={async (value) => {
             const success = await handleAdd(value);
             if (success) {
@@ -273,7 +341,7 @@ const TableList: React.FC<unknown> = () => {
               }
             }
           }}
-          rowKey="appName"
+          rowKey="name"
           type="form"
           //@ts-ignore
           columns={columns}

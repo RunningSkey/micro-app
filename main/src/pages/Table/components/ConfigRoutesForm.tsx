@@ -1,30 +1,122 @@
-import { APP_TYPE } from '@/constants';
-import { Button, Drawer, Form, Input, Select, Space, Tree } from 'antd';
-import React, { PropsWithChildren, useState } from 'react';
-import { TABLE_API } from '../typings';
+import { MicroAppItem } from '@/serviceMicro';
+import { Button, Drawer, Form, Input, Space } from 'antd';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
-export type FormValueType = TABLE_API.SubApp;
+export type FormValueType = MicroAppItem;
 
 export interface ConfigRoutesFormProps {
   onCancel: (flag?: boolean, formVals?: FormValueType) => void;
   onSubmit: (values: FormValueType) => Promise<void>;
   open: boolean;
-  values?: TABLE_API.SubApp;
+  values?: MicroAppItem;
 }
 
 const ConfigRoutesForm: React.FC<PropsWithChildren<ConfigRoutesFormProps>> = (
   props,
 ) => {
+  const { onCancel, onSubmit, values, open } = props;
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const handleClose = () => props.onCancel();
+  const handleClose = () => {
+    onCancel();
+  };
   const handleSubmit = async () => {
     const value = await form.validateFields();
     setLoading(true);
-    await props.onSubmit(value).finally(() => {
+    await onSubmit(value).finally(() => {
       setLoading(false);
     });
   };
+  const isMicro = !!values?.origin;
+  useEffect(() => {
+    if (open) {
+      form.setFieldsValue(values);
+    }
+  }, [open]);
+  const renderItem = useMemo(() => {
+    if (isMicro)
+      return (
+        <>
+          <Form.Item
+            name="name"
+            label="子应用名称"
+            rules={[
+              {
+                required: true,
+                message: '请输入',
+              },
+            ]}
+          >
+            <Input disabled placeholder="请输入" />
+          </Form.Item>
+          <Form.Item
+            name="origin"
+            label="子应用地址"
+            rules={[
+              {
+                required: true,
+                message: '请输入',
+              },
+            ]}
+          >
+            <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item
+            name="base"
+            label="子应用基础路径	"
+            rules={[
+              {
+                required: true,
+                message: '请输入',
+              },
+            ]}
+          >
+            <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item
+            name="qiankunBase"
+            label="子应用在主应用的基础路径"
+            rules={[
+              {
+                required: true,
+                message: '请输入',
+              },
+            ]}
+          >
+            <Input placeholder="请输入" />
+          </Form.Item>
+        </>
+      );
+
+    return (
+      <>
+        <Form.Item
+          name="name"
+          label="子应用菜单名称"
+          rules={[
+            {
+              required: true,
+              message: '请输入',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" />
+        </Form.Item>
+        <Form.Item
+          name="path"
+          label="子应用在主应用的路径	"
+          rules={[
+            {
+              required: true,
+              message: '请输入',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" />
+        </Form.Item>
+      </>
+    );
+  }, [isMicro]);
   return (
     <Drawer
       width={640}
@@ -48,32 +140,9 @@ const ConfigRoutesForm: React.FC<PropsWithChildren<ConfigRoutesFormProps>> = (
         </Space>
       }
     >
-      <Form form={form} initialValues={props.values}>
-        <Form.Item
-          name="appName"
-          label="子应用名称"
-          rules={[
-            {
-              required: true,
-              message: '请输入',
-            },
-          ]}
-        >
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item
-          name="appEntry"
-          label="子应用地址"
-          rules={[
-            {
-              required: true,
-              message: '请输入',
-            },
-          ]}
-        >
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item
+      <Form form={form}>
+        {renderItem}
+        {/* <Form.Item
           name="appType"
           label="子应用类型"
           rules={[
@@ -90,8 +159,8 @@ const ConfigRoutesForm: React.FC<PropsWithChildren<ConfigRoutesFormProps>> = (
             }))}
             placeholder="请选择"
           />
-        </Form.Item>
-        <Form.Item
+        </Form.Item> */}
+        {/* <Form.Item
           name="appRoutes"
           valuePropName="treeData"
           label="子应用路由"
@@ -108,7 +177,7 @@ const ConfigRoutesForm: React.FC<PropsWithChildren<ConfigRoutesFormProps>> = (
               key: 'name',
             }}
           ></Tree>
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </Drawer>
   );
