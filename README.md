@@ -2,8 +2,11 @@
 
 以 umi4.0 选择 Ant Design Pro 作为基座搭建的微应用
 
-效果预览：
-![效果预览](./show.gif)
+dev 效果预览：
+![效果预览](./show_dev.gif)
+
+prd 效果预览：
+![效果预览](./show_prd.gif)
 
 main、react:
 
