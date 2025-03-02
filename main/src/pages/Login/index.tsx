@@ -17,7 +17,14 @@ import {
   setAlpha,
 } from '@ant-design/pro-components';
 import { history, useModel } from '@umijs/max';
-import { Space, Tabs, message, notification, theme } from 'antd';
+import {
+  ConfigProvider,
+  Space,
+  Tabs,
+  message,
+  notification,
+  theme,
+} from 'antd';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 const { login } = services.UserController;
@@ -26,7 +33,8 @@ type LoginType = 'phone' | 'account';
 export default () => {
   const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('account');
-  const { setInitialState } = useModel('@@initialState');
+  const { setInitialState, initialState } = useModel('@@initialState');
+  const { settings } = initialState || {};
 
   const iconStyles: CSSProperties = {
     marginInlineStart: '16px',
@@ -37,174 +45,220 @@ export default () => {
   };
 
   return (
-    <ProConfigProvider hashed={false}>
-      <div style={{ backgroundColor: token.colorBgContainer }}>
-        <LoginForm
-          logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
-          title="Github"
-          subTitle="全球最大的代码托管平台"
-          actions={
-            <Space>
-              其他登录方式
-              <AlipayCircleOutlined style={iconStyles} />
-              <TaobaoCircleOutlined style={iconStyles} />
-              <WeiboCircleOutlined style={iconStyles} />
-            </Space>
-          }
-          onFinish={async (values) => {
-            const data = await login({
-              name: values.username,
-              password: values.password,
-            });
-
-            if (!data.success && data.errorMessage) {
-              return notification.error({
-                message: data.errorMessage,
-              });
+    <ConfigProvider
+      getTargetContainer={() => {
+        return document.getElementById('workbench-container') || document.body;
+      }}
+      theme={
+        settings
+          ? {
+              token: {
+                colorLink: settings?.colorPrimary,
+                colorPrimary: settings?.colorPrimary,
+              },
             }
-            setInitialState(data.data);
-            localStorage.setItem('initialState', JSON.stringify(data.data));
-            const { redirect } = getURLParameters();
-            history.push(redirect || '/');
-          }}
-        >
-          <Tabs
-            centered
-            activeKey={loginType}
-            onChange={(activeKey) => setLoginType(activeKey as LoginType)}
-          >
-            <Tabs.TabPane key={'account'} tab={'账号密码登录'} />
-            <Tabs.TabPane key={'phone'} tab={'手机号登录'} />
-          </Tabs>
-          {loginType === 'account' && (
-            <>
-              <ProFormText
-                name="username"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <UserOutlined className={'prefixIcon'} />,
-                }}
-                placeholder={'用户名: admin or user'}
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入用户名!',
-                  },
-                ]}
-              />
-              <ProFormText.Password
-                name="password"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined className={'prefixIcon'} />,
-                  strengthText:
-                    'Password should contain numbers, letters and special characters, at least 8 characters long.',
-                  statusRender: (value) => {
-                    const getStatus = () => {
-                      if (value && value.length > 12) {
-                        return 'ok';
-                      }
-                      if (value && value.length > 6) {
-                        return 'pass';
-                      }
-                      return 'poor';
-                    };
-                    const status = getStatus();
-                    if (status === 'pass') {
-                      return (
-                        <div style={{ color: token.colorWarning }}>
-                          强度：中
-                        </div>
-                      );
-                    }
-                    if (status === 'ok') {
-                      return (
-                        <div style={{ color: token.colorSuccess }}>
-                          强度：强
-                        </div>
-                      );
-                    }
-                    return (
-                      <div style={{ color: token.colorError }}>强度：弱</div>
-                    );
-                  },
-                }}
-                placeholder={'密码: ant.design'}
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入密码！',
-                  },
-                ]}
-              />
-            </>
-          )}
-          {loginType === 'phone' && (
-            <>
-              <ProFormText
-                fieldProps={{
-                  size: 'large',
-                  prefix: <MobileOutlined className={'prefixIcon'} />,
-                }}
-                name="mobile"
-                placeholder={'手机号'}
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入手机号！',
-                  },
-                  {
-                    pattern: /^1\d{10}$/,
-                    message: '手机号格式错误！',
-                  },
-                ]}
-              />
-              <ProFormCaptcha
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined className={'prefixIcon'} />,
-                }}
-                captchaProps={{
-                  size: 'large',
-                }}
-                placeholder={'请输入验证码'}
-                captchaTextRender={(timing, count) => {
-                  if (timing) {
-                    return `${count} ${'获取验证码'}`;
-                  }
-                  return '获取验证码';
-                }}
-                name="captcha"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入验证码！',
-                  },
-                ]}
-                onGetCaptcha={async () => {
-                  message.success('获取验证码成功！验证码为：1234');
-                }}
-              />
-            </>
-          )}
-          <div
-            style={{
-              marginBlockEnd: 24,
+          : undefined
+      }
+    >
+      <ProConfigProvider hashed={false}>
+        <div style={{ backgroundColor: token.colorBgContainer }}>
+          <LoginForm
+            initialValues={{
+              username: 'admin',
+              password: 'ant.design',
+            }}
+            logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
+            title="Github"
+            subTitle="全球最大的代码托管平台"
+            actions={
+              <Space>
+                其他登录方式
+                <AlipayCircleOutlined style={iconStyles} />
+                <TaobaoCircleOutlined style={iconStyles} />
+                <WeiboCircleOutlined style={iconStyles} />
+              </Space>
+            }
+            onFinish={async (values) => {
+              // const data = await login({
+              //   name: values.username,
+              //   password: values.password,
+              // });
+              const { username: name, password } = values;
+              const isSuccess =
+                (name === 'admin' && password === 'ant.design') ||
+                (name === 'user' && password === 'ant.design');
+              const data = {
+                success: isSuccess,
+                errorMessage: isSuccess ? '' : '登录失败',
+                data: {
+                  name,
+                  token: '12345',
+                  routes: [],
+                },
+                errorCode: 0,
+              };
+
+              if (!data.success && data.errorMessage) {
+                return notification.error({
+                  message: data.errorMessage,
+                });
+              }
+              const local = JSON.parse(localStorage.getItem('initialState'));
+
+              data.data.settings = local?.settings || {
+                navTheme: 'light',
+                layout: 'mix',
+                contentWidth: 'Fluid',
+                fixedHeader: true,
+                fixSiderbar: true,
+                colorPrimary: '#1677FF',
+                splitMenus: false,
+                // siderMenuType: 'group',
+              };
+              setInitialState(data.data);
+              localStorage.setItem('initialState', JSON.stringify(data.data));
+              const { redirect } = getURLParameters();
+              history.push(redirect || '/');
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
-            </ProFormCheckbox>
-            <a
+            <Tabs
+              centered
+              activeKey={loginType}
+              onChange={(activeKey) => setLoginType(activeKey as LoginType)}
+            >
+              <Tabs.TabPane key={'account'} tab={'账号密码登录'} />
+              <Tabs.TabPane key={'phone'} tab={'手机号登录'} />
+            </Tabs>
+            {loginType === 'account' && (
+              <>
+                <ProFormText
+                  name="username"
+                  fieldProps={{
+                    size: 'large',
+                    prefix: <UserOutlined className={'prefixIcon'} />,
+                  }}
+                  placeholder={'用户名: admin or user'}
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入用户名!',
+                    },
+                  ]}
+                />
+                <ProFormText.Password
+                  name="password"
+                  fieldProps={{
+                    size: 'large',
+                    prefix: <LockOutlined className={'prefixIcon'} />,
+                    strengthText:
+                      'Password should contain numbers, letters and special characters, at least 8 characters long.',
+                    statusRender: (value) => {
+                      const getStatus = () => {
+                        if (value && value.length > 12) {
+                          return 'ok';
+                        }
+                        if (value && value.length > 6) {
+                          return 'pass';
+                        }
+                        return 'poor';
+                      };
+                      const status = getStatus();
+                      if (status === 'pass') {
+                        return (
+                          <div style={{ color: token.colorWarning }}>
+                            强度：中
+                          </div>
+                        );
+                      }
+                      if (status === 'ok') {
+                        return (
+                          <div style={{ color: token.colorSuccess }}>
+                            强度：强
+                          </div>
+                        );
+                      }
+                      return (
+                        <div style={{ color: token.colorError }}>强度：弱</div>
+                      );
+                    },
+                  }}
+                  placeholder={'密码: ant.design'}
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入密码！',
+                    },
+                  ]}
+                />
+              </>
+            )}
+            {loginType === 'phone' && (
+              <>
+                <ProFormText
+                  fieldProps={{
+                    size: 'large',
+                    prefix: <MobileOutlined className={'prefixIcon'} />,
+                  }}
+                  name="mobile"
+                  placeholder={'手机号'}
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入手机号！',
+                    },
+                    {
+                      pattern: /^1\d{10}$/,
+                      message: '手机号格式错误！',
+                    },
+                  ]}
+                />
+                <ProFormCaptcha
+                  fieldProps={{
+                    size: 'large',
+                    prefix: <LockOutlined className={'prefixIcon'} />,
+                  }}
+                  captchaProps={{
+                    size: 'large',
+                  }}
+                  placeholder={'请输入验证码'}
+                  captchaTextRender={(timing, count) => {
+                    if (timing) {
+                      return `${count} ${'获取验证码'}`;
+                    }
+                    return '获取验证码';
+                  }}
+                  name="captcha"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入验证码！',
+                    },
+                  ]}
+                  onGetCaptcha={async () => {
+                    message.success('获取验证码成功！验证码为：1234');
+                  }}
+                />
+              </>
+            )}
+            <div
               style={{
-                float: 'right',
+                marginBlockEnd: 24,
               }}
             >
-              忘记密码
-            </a>
-          </div>
-        </LoginForm>
-      </div>
-    </ProConfigProvider>
+              <ProFormCheckbox noStyle name="autoLogin">
+                自动登录
+              </ProFormCheckbox>
+              <a
+                style={{
+                  float: 'right',
+                }}
+              >
+                忘记密码
+              </a>
+            </div>
+          </LoginForm>
+        </div>
+      </ProConfigProvider>
+    </ConfigProvider>
   );
 };

@@ -13,11 +13,7 @@ export default defineConfig({
     process.env.APP_ENV === 'dev'
       ? '/'
       : path.join(__dirname, '../build/child/react'),
-  antd: {
-    configProvider: {
-      prefixCls: 'react',
-    },
-  },
+  antd: {},
   access: {},
   model: {},
   initialState: {},

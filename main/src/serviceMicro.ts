@@ -15,7 +15,7 @@ export type Route = {
   routes?: Route[];
   children?: Route[];
 };
-const formatMicroRoutes = (
+export const formatMicroRoutes = (
   qiankunBase: string,
   base: string,
   routes?: Route[],
@@ -46,7 +46,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child1',
       routes: [
         {
-          name: 'vite-project-root',
+          name: 'vite-project-root(微应用)',
           path: '/',
           routes: [
             {
@@ -85,7 +85,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child2',
       routes: [
         {
-          name: 'react-root',
+          name: 'react-root(admin微应用)',
           path: '/',
           routes: [
             {
@@ -128,7 +128,7 @@ export const getMicroApps = () => {
       qiankunBase: '/child3',
       routes: [
         {
-          name: 'vue2-root',
+          name: 'vue2-root(微应用)',
           path: '/',
           routes: [
             {
@@ -159,7 +159,7 @@ export const getMicroApps = () => {
     },
   ].map((item) => ({
     ...item,
-    origin: process.env.APP_ENV === 'prod' ? '//localhost:4000' : item.origin,
+    origin: process.env.APP_ENV === 'prod' ? location.origin : item.origin,
     routes: formatMicroRoutes(item.qiankunBase, item.base, item.routes),
   }));
   const resValue = jsonParse(localStorage.getItem(MICRO_APPS), defaultValue);

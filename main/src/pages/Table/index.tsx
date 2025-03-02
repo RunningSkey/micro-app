@@ -256,7 +256,7 @@ const TableList: React.FC<unknown> = () => {
   ];
   return (
     <>
-      <div style={{ border: '1px solid' }}>
+      <div hidden style={{ border: '1px solid' }}>
         nginx部署配置
         <code style={{ whiteSpace: 'pre-wrap' }}>{`
           listen       4000;

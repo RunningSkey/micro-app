@@ -1,11 +1,10 @@
 // 运行时配置
 
-import { RuntimeConfig, history, useModel } from '@umijs/max';
-import { Button, Space } from 'antd';
+import { history, useModel } from '@umijs/max';
+import { Skeleton } from 'antd';
 import { useState } from 'react';
-import routes from '../config/routes';
-import { MICRO_APPS } from './constants';
-import { Route, getMicroApps } from './serviceMicro';
+import './gloabl.less';
+import { getMicroApps } from './serviceMicro';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -14,7 +13,20 @@ export async function getInitialState(): Promise<{ name: string }> {
   // const { getUserInfo } = services.UserController;
   const userInfo = JSON.parse(
     localStorage.getItem('initialState') ||
-      '{"name":"user","token":"12345","routes":[]}',
+      JSON.stringify({
+        name: 'user',
+        token: '12345',
+        routes: [],
+        settings: {
+          navTheme: 'light',
+          layout: 'mix',
+          contentWidth: 'Fluid',
+          fixedHeader: true,
+          fixSiderbar: true,
+          colorPrimary: '#1677FF',
+          splitMenus: false,
+        },
+      }),
   );
   // const data = await getUserInfo({
   //   name: userInfo.name,
@@ -52,7 +64,6 @@ const waitTime = (time: number = 100) => {
     }, time);
   });
 };
-let microMenu: Route[] = [];
 
 /** 动态qiankun配置 */
 export const qiankun = (async () => {
@@ -70,7 +81,6 @@ export const qiankun = (async () => {
         }),
       ],
       routes: microApp.map((item) => {
-        microMenu.push(...item.routes);
         return {
           name: item.name,
           path: `${item.qiankunBase}${item.base}/*`,
@@ -78,75 +88,32 @@ export const qiankun = (async () => {
           microAppProps: {
             autoCaptureError: true,
             autoSetLoading: true,
+            loader: (loading: boolean) =>
+              loading && (
+                <Skeleton
+                  title={{
+                    width: '100%',
+                  }}
+                />
+              ),
             qiankunBase: item.qiankunBase,
           },
           hideInMenu: true,
         };
       }),
+      lifeCycles: {
+        beforeMount: (app) => {
+          console.log('before mount', app);
+          // 可以在这里添加逻辑，例如清除缓存
+        },
+        afterMount: (app) => {
+          console.log('after mount', app);
+          // 可以在这里触发更新逻辑
+        },
+      },
     },
   };
 })();
-
-export const layout: RuntimeConfig['layout'] = () => {
-  return {
-    logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
-    menu: {
-      locale: false,
-      request: async () => {
-        return (
-          routes
-            //@ts-ignore
-            .concat(microMenu)
-        );
-      },
-    },
-    breadcrumbProps: {
-      separator: '>',
-    },
-    layout: 'mix',
-    contentStyle: {
-      padding: 0,
-    },
-    siderMenuType: 'sub',
-    rightContentRender(_, dom) {
-      return (
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => {
-              window.location.reload();
-            }}
-          >
-            reload
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              localStorage.setItem(MICRO_APPS, '');
-              window.location.reload();
-            }}
-          >
-            初始化菜单信息
-          </Button>
-          {dom}
-        </Space>
-      );
-    },
-    logout() {
-      history.push('/login');
-    },
-    links: [
-      <a
-        rel="noreferrer"
-        target="_blank"
-        key={1}
-        href="https://github.com/RunningSkey/micro-app"
-      >
-        external-link
-      </a>,
-    ],
-  };
-};
 
 export function useQiankunStateForSlave() {
   const mainInitialState = useModel('@@initialState');

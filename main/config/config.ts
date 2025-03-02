@@ -13,18 +13,12 @@ export default defineConfig({
     process.env.APP_ENV === 'dev'
       ? '/'
       : path.resolve(__dirname, '../../build'),
-  antd: {
-    configProvider: {
-      prefixCls: 'main',
-    },
-  },
+  antd: {},
   access: {},
   model: {},
   initialState: {},
   request: {},
-  layout: {
-    title: 'micro-app',
-  },
+  layout: false,
   qiankun: {
     master: {},
   },
